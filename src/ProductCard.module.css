@@ -1,0 +1,8 @@
+
+/* Style for one product card */
+.card {
+    border: 1px solid #ddd;
+    padding: 16px;
+    margin: 8px;
+    border-radius: 8px;
+  }
