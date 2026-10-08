@@ -4,6 +4,7 @@
 
 body {
   margin: 0;
+
   font-family: Arial, sans-serif;
 
   background-color: #111315;
@@ -19,13 +20,15 @@ body {
   width: 100%;
 
   display: grid;
+
   grid-template-columns: 1fr auto 1fr;
+
   align-items: center;
 
-  /* Smaller navbar height */
   padding: 9px 30px;
 
   background-color: #16191d;
+
   border-bottom: 1px solid #2a2f35;
 }
 
@@ -48,9 +51,9 @@ body {
   justify-self: center;
 
   display: flex;
+
   align-items: center;
 
-  /* Smaller space between links */
   gap: 22px;
 }
 
@@ -60,7 +63,6 @@ body {
 
   text-decoration: none;
 
-  /* Smaller navigation text */
   font-size: 14px;
 
   transition: 0.2s;
@@ -71,8 +73,6 @@ body {
   color: #d6a85f;
 }
 
-
-/* Active page */
 
 .nav a.active {
   color: #d6a85f;
@@ -86,19 +86,19 @@ body {
 
   display: flex;
 
-  /* Smaller space between buttons */
   gap: 6px;
 }
 
 
 .headerButtons button {
-  /* Smaller buttons */
   padding: 5px 10px;
 
   background-color: transparent;
+
   color: #f2f2f2;
 
   border: 1px solid #3a4047;
+
   border-radius: 6px;
 
   font-size: 12px;
@@ -111,6 +111,7 @@ body {
 
 .headerButtons button:hover {
   background-color: #d6a85f;
+
   color: #111315;
 
   border-color: #d6a85f;
@@ -118,15 +119,17 @@ body {
 
 
 /* ==================================================
-   HOME / MAIN CONTENT
+   HOME / MAIN PAGE
    ================================================== */
 
 .main {
   width: 100%;
-  max-width: 1250px;
+
+  max-width: 1500px;
 
   margin: 0 auto;
-  padding: 20px 20px 50px;
+
+  padding: 20px 30px 55px;
 }
 
 
@@ -137,7 +140,8 @@ body {
 
   text-align: center;
 
-  font-size: 28px;
+  font-size: 24px;
+
   font-weight: 700;
 
   color: #f2f2f2;
@@ -149,58 +153,11 @@ body {
 .line {
   max-width: 900px;
 
-  margin: 12px auto 24px;
+  margin: 8px auto 18px;
 
   border: none;
+
   border-top: 1px solid #2f343a;
-}
-
-
-/* ==================================================
-   CATEGORY BUTTONS
-   ================================================== */
-
-.categories {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-
-  gap: 10px;
-
-  margin-bottom: 20px;
-}
-
-
-.categories button {
-  padding: 8px 17px;
-
-  background-color: #1a1d21;
-  color: #c7ccd1;
-
-  border: 1px solid #333940;
-  border-radius: 999px;
-
-  cursor: pointer;
-
-  transition: 0.2s;
-}
-
-
-.categories button:hover {
-  background-color: #d6a85f;
-  color: #111315;
-
-  border-color: #d6a85f;
-}
-
-
-/* Selected category */
-
-.categories button.active {
-  background-color: #d6a85f;
-  color: #111315;
-
-  border-color: #d6a85f;
 }
 
 
@@ -212,6 +169,7 @@ body {
   width: 100%;
 
   display: flex;
+
   justify-content: center;
 
   margin-bottom: 24px;
@@ -220,14 +178,17 @@ body {
 
 .searchBox input {
   width: 100%;
+
   max-width: 480px;
 
-  padding: 12px 15px;
+  padding: 11px 15px;
 
   background-color: #1a1d21;
+
   color: #f2f2f2;
 
   border: 1px solid #343a40;
+
   border-radius: 10px;
 
   font-size: 15px;
@@ -251,18 +212,291 @@ body {
 
 
 /* ==================================================
+   SEARCH AREA
+   Search + Clear filters in one row
+   ================================================== */
+
+.searchArea {
+  width: 100%;
+
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+
+  gap: 8px;
+
+  margin-bottom: 24px;
+}
+
+
+/* Search box inside search area */
+
+.searchArea .searchBox {
+  width: 100%;
+
+  max-width: 480px;
+
+  margin-bottom: 0;
+}
+
+
+/* Search input */
+
+.searchArea .searchBox input {
+  width: 100%;
+
+  max-width: none;
+}
+
+
+/* Clear filters button */
+
+.clearFiltersButton {
+  width: auto;
+
+  padding: 7px 9px;
+
+  background-color: transparent;
+
+  color: #d6a85f;
+
+  border: 1px solid #d6a85f;
+
+  border-radius: 7px;
+
+  font-size: 12px;
+
+  cursor: pointer;
+
+  white-space: nowrap;
+
+  transition: 0.2s;
+}
+
+
+.clearFiltersButton:hover {
+  background-color: #d6a85f;
+
+  color: #111315;
+}
+
+
+/* ==================================================
+   SHOP LAYOUT
+   ================================================== */
+
+.shopLayout {
+  width: 100%;
+
+  display: grid;
+
+  /*
+    Thin sidebar on the left.
+    Products take most of the space.
+  */
+  grid-template-columns: 1fr 6fr;
+
+  gap: 25px;
+
+  align-items: start;
+}
+
+
+/* ==================================================
+   LEFT SIDEBAR
+   ================================================== */
+
+.sidebar {
+  width: 100%;
+
+  display: flex;
+
+  flex-direction: column;
+
+  padding: 20px;
+
+  background-color: #16191d;
+
+  border: 1px solid #2d3238;
+
+  border-radius: 12px;
+}
+
+
+/* Categories title */
+
+.sidebar h3 {
+  margin: 0 0 18px;
+
+  color: #f2f2f2;
+
+  font-size: 17px;
+
+  font-weight: 700;
+}
+
+
+/* Category buttons */
+
+.sidebar button {
+  width: 100%;
+
+  padding: 10px 12px;
+
+  margin-bottom: 6px;
+
+  background-color: transparent;
+
+  color: #bfc5ca;
+
+  border: none;
+
+  border-radius: 7px;
+
+  text-align: left;
+
+  font-size: 14px;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+
+/* Category hover */
+
+.sidebar button:hover {
+  background-color: #22262b;
+
+  color: #d6a85f;
+}
+
+
+/* Selected category */
+
+.sidebar button.active {
+  background-color: #d6a85f;
+
+  color: #111315;
+
+  font-weight: bold;
+}
+
+
+/* ==================================================
+   PRODUCTS SIDE
+   ================================================== */
+
+.productsSection {
+  width: 100%;
+
+  min-width: 0;
+}
+
+
+/* Number of products */
+
+.resultsCount {
+  margin: 0 0 15px;
+
+  color: #8f969d;
+
+  font-size: 13px;
+}
+
+
+/* ==================================================
    PRODUCTS GRID
    ================================================== */
 
 .productsGrid {
+  width: 100%;
+
   display: grid;
 
   grid-template-columns: repeat(
     auto-fill,
-    minmax(240px, 1fr)
+    minmax(220px, 1fr)
   );
 
-  gap: 24px;
+  gap: 22px;
+}
+
+
+/* No search results */
+
+.noResults {
+  padding: 40px 0;
+
+  text-align: center;
+
+  color: #aeb4ba;
+
+  font-size: 15px;
+}
+
+
+/* ==================================================
+   PAGINATION
+   ================================================== */
+
+.pagination {
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  gap: 15px;
+
+  margin-top: 35px;
+
+  margin-bottom: 20px;
+}
+
+
+.pagination button {
+  padding: 8px 14px;
+
+  background-color: transparent;
+
+  color: #d6a85f;
+
+  border: 1px solid #d6a85f;
+
+  border-radius: 7px;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+
+.pagination button:hover {
+  background-color: #d6a85f;
+
+  color: #111315;
+}
+
+
+.pagination button:disabled {
+  opacity: 0.35;
+
+  cursor: not-allowed;
+
+  background-color: transparent;
+
+  color: #777;
+
+  border-color: #555;
+}
+
+
+.pagination span {
+  color: #c7ccd1;
+
+  font-size: 14px;
 }
 
 
@@ -272,11 +506,12 @@ body {
 
 .aboutPage {
   width: 100%;
+
   max-width: 1250px;
 
   margin: 0 auto;
 
-  padding: 35px 35px;
+  padding: 22px 35px;
 
   text-align: center;
 }
@@ -287,7 +522,8 @@ body {
 
   color: #f2f2f2;
 
-  font-size: 28px;
+  font-size: 24px;
+
   font-weight: 700;
 }
 
@@ -300,6 +536,7 @@ body {
   color: #aeb4ba;
 
   font-size: 17px;
+
   line-height: 1.6;
 }
 
@@ -310,6 +547,7 @@ body {
 
 .detailsPage {
   width: 100%;
+
   max-width: 1150px;
 
   margin: 0 auto;
@@ -328,9 +566,11 @@ body {
   padding: 9px 17px;
 
   background-color: transparent;
+
   color: #d6a85f;
 
   border: 1px solid #d6a85f;
+
   border-radius: 8px;
 
   cursor: pointer;
@@ -343,6 +583,7 @@ body {
 
 .backButton:hover {
   background-color: #d6a85f;
+
   color: #111315;
 }
 
@@ -361,6 +602,7 @@ body {
   background-color: #1a1d21;
 
   border: 1px solid #2d3238;
+
   border-radius: 18px;
 
   box-shadow: 0 18px 45px rgba(0, 0, 0, 0.25);
@@ -375,7 +617,9 @@ body {
   min-height: 420px;
 
   display: flex;
+
   justify-content: center;
+
   align-items: center;
 
   padding: 30px;
@@ -388,6 +632,7 @@ body {
 
 .detailsImage img {
   width: 100%;
+
   max-width: 400px;
 
   object-fit: contain;
@@ -400,6 +645,7 @@ body {
 
 .detailsInfo {
   display: flex;
+
   flex-direction: column;
 
   justify-content: center;
@@ -414,9 +660,11 @@ body {
   padding: 6px 12px;
 
   background-color: rgba(214, 168, 95, 0.12);
+
   color: #d6a85f;
 
   border: 1px solid #d6a85f;
+
   border-radius: 999px;
 
   font-size: 13px;
@@ -431,6 +679,7 @@ body {
   color: #f2f2f2;
 
   font-size: 34px;
+
   line-height: 1.2;
 }
 
@@ -457,6 +706,7 @@ body {
   color: #d6a85f;
 
   font-size: 30px;
+
   font-weight: bold;
 }
 
@@ -467,6 +717,7 @@ body {
   color: #b9bfc5;
 
   font-size: 16px;
+
   line-height: 1.7;
 }
 
@@ -479,6 +730,7 @@ body {
   padding: 7px 12px;
 
   background-color: rgba(80, 180, 110, 0.12);
+
   color: #7fd494;
 
   border-radius: 7px;
@@ -504,12 +756,15 @@ body {
   padding: 14px 20px;
 
   background-color: #d6a85f;
+
   color: #111315;
 
   border: none;
+
   border-radius: 9px;
 
   font-size: 16px;
+
   font-weight: bold;
 
   cursor: pointer;
@@ -533,7 +788,9 @@ body {
   min-height: 300px;
 
   display: flex;
+
   justify-content: center;
+
   align-items: center;
 
   color: #aeb4ba;
@@ -543,10 +800,95 @@ body {
 
 
 /* ==================================================
+   404 PAGE
+   ================================================== */
+
+.notFoundPage {
+  width: 100%;
+
+  min-height: calc(100vh - 50px);
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  padding: 30px;
+}
+
+
+.notFoundContent {
+  text-align: center;
+}
+
+
+.notFoundContent h1 {
+  margin: 0;
+
+  color: #d6a85f;
+
+  font-size: 70px;
+
+  font-weight: 700;
+}
+
+
+.notFoundContent h2 {
+  margin: 8px 0 12px;
+
+  color: #f2f2f2;
+
+  font-size: 26px;
+}
+
+
+.notFoundContent p {
+  margin: 0 0 25px;
+
+  color: #aeb4ba;
+
+  font-size: 15px;
+}
+
+
+.notFoundContent .backButton {
+  margin: 0;
+
+  padding: 8px 15px;
+
+  background-color: transparent;
+
+  color: #d6a85f;
+
+  border: 1px solid #d6a85f;
+
+  border-radius: 7px;
+
+  font-size: 14px;
+
+  font-weight: bold;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+
+.notFoundContent .backButton:hover {
+  background-color: #d6a85f;
+
+  color: #111315;
+}
+
+
+/* ==================================================
    RESPONSIVE
    ================================================== */
 
 @media (max-width: 800px) {
+
+  /* HEADER */
 
   .header {
     grid-template-columns: 1fr;
@@ -566,6 +908,7 @@ body {
     justify-self: center;
 
     flex-wrap: wrap;
+
     justify-content: center;
   }
 
@@ -574,28 +917,87 @@ body {
     justify-self: center;
 
     flex-wrap: wrap;
+
     justify-content: center;
   }
 
 
-.main {
-  padding: 10px 20px 50px;
-}
+  /* MAIN */
 
-  .title {
-    font-size: 26px;
+  .main {
+    padding: 10px 18px 45px;
   }
 
 
+  .title {
+    font-size: 22px;
+  }
+
+
+  /* SEARCH */
+
+  .searchArea {
+    flex-direction: column;
+
+    gap: 8px;
+  }
+
+
+  .searchArea .searchBox {
+    max-width: 100%;
+  }
+
+
+  .clearFiltersButton {
+    width: 100%;
+
+    max-width: 480px;
+  }
+
+
+  /* SHOP */
+
+  .shopLayout {
+    grid-template-columns: 1fr;
+
+    gap: 20px;
+  }
+
+
+  .sidebar {
+    width: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+  }
+
+
+  /* PRODUCTS */
+
+  .productsGrid {
+    grid-template-columns: repeat(
+      auto-fill,
+      minmax(200px, 1fr)
+    );
+
+    gap: 18px;
+  }
+
+
+  /* ABOUT */
+
   .aboutPage {
-    padding: 30px 20px;
+    padding: 20px;
   }
 
 
   .aboutPage h1 {
-    font-size: 26px;
+    font-size: 24px;
   }
 
+
+  /* DETAILS */
 
   .detailsPage {
     padding: 30px 20px;
@@ -623,5 +1025,14 @@ body {
 
   .detailsPrice {
     font-size: 26px;
+  }
+
+
+  /* PAGINATION */
+
+  .pagination {
+    flex-wrap: wrap;
+
+    gap: 10px;
   }
 }

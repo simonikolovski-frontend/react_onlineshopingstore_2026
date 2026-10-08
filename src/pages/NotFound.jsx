@@ -1,13 +1,45 @@
-// This page appears when the URL does not exist.
+// useNavigate lets us go back
+// to the previous page.
+import { useNavigate } from 'react-router-dom';
+
 
 function NotFound() {
-  return (
-    <div>
-      <h1>404</h1>
+  // Create navigate function.
+  const navigate = useNavigate();
 
-      <p>Page Not Found</p>
-    </div>
+
+  return (
+    <main className="notFoundPage">
+
+      <div className="notFoundContent">
+
+        <h1>
+          404
+        </h1>
+
+
+        <h2>
+          Page Not Found
+        </h2>
+
+
+        <p>
+          The page you are looking for does not exist.
+        </p>
+
+
+        <button
+          className="backButton"
+          onClick={() => navigate(-1)}
+        >
+          ← Go Back
+        </button>
+
+      </div>
+
+    </main>
   );
 }
+
 
 export default NotFound;

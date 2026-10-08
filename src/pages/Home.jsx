@@ -1,29 +1,60 @@
-// useState keeps the selected category.
-import { useState } from 'react';
+// useState keeps values that can change.
+// useEffect is used for debounce.
+import {
+  useState,
+  useEffect
+} from 'react';
 
-// useSearchParams reads ?q= from the URL.
-// useNavigate changes the URL.
+
+// React Router.
 import {
   useSearchParams,
   useNavigate
 } from 'react-router-dom';
 
+
+// Our custom fetch hook.
 import useFetch from '../hooks/useFetch.jsx';
+
+
+// Product card.
 import ProductCard from '../components/ProductCard.jsx';
+
 
 import '../App.css';
 
 
 function Home() {
-  // Selected category.
+  // ==================================================
+  // CATEGORY
+  // ==================================================
+
+  // Empty string means:
+  // show all categories.
   const [category, setCategory] = useState('');
 
+
+  // ==================================================
+  // PAGINATION
+  // ==================================================
+
+  // Current page.
+  const [page, setPage] = useState(1);
+
+
+  // Show 20 products on one page.
+  const itemsPerPage = 20;
+
+
+  // ==================================================
+  // SEARCH PARAMS
+  // ==================================================
 
   // Read query parameters from the URL.
   const [searchParams] = useSearchParams();
 
 
-  // Function for changing the URL.
+  // Used to change the URL.
   const navigate = useNavigate();
 
 
@@ -36,58 +67,159 @@ function Home() {
   const search = searchParams.get('q') || '';
 
 
-  // Decide which API URL we need.
+  // This is what the user is currently typing.
   //
-  // If search is empty:
-  // load ALL products.
+  // It changes immediately.
   //
-  // If search has text:
+  // The API search waits for the debounce.
+  const [searchInput, setSearchInput] =
+    useState(search);
+
+
+  // ==================================================
+  // DEBOUNCE
+  // ==================================================
+
+  useEffect(() => {
+    // Start a 500ms timer.
+    const timer = setTimeout(() => {
+      // Remove spaces before and after the text.
+      const term = searchInput.trim();
+
+
+      // Every new search starts from page 1.
+      setPage(1);
+
+
+      // If search is empty...
+      if (term === '') {
+        // Go back to normal Home only
+        // if we currently have a search URL.
+        if (search !== '') {
+          navigate(
+            '/',
+            {
+              replace: true
+            }
+          );
+        }
+
+        return;
+      }
+
+
+      // If URL already contains the same search,
+      // do nothing.
+      if (term === search) {
+        return;
+      }
+
+
+      // Change the URL after the user
+      // stops typing for 500ms.
+      navigate(
+        `/search?q=${encodeURIComponent(term)}`,
+        {
+          replace: true
+        }
+      );
+
+    }, 500);
+
+
+    // If another letter is typed before
+    // 500ms finishes, cancel the old timer.
+    return () => {
+      clearTimeout(timer);
+    };
+
+  }, [
+    searchInput,
+    search,
+    navigate
+  ]);
+
+
+  // ==================================================
+  // KEEP INPUT AND URL TOGETHER
+  // ==================================================
+
+  useEffect(() => {
+    setSearchInput(search);
+  }, [search]);
+
+
+  // ==================================================
+  // PRODUCTS API
+  // ==================================================
+
+  // If there is search text,
   // search the whole DummyJSON database.
-  const apiUrl = search
+  //
+  // If search is empty,
+  // load all products.
+  const productsUrl = search
     ? `https://dummyjson.com/products/search?q=${encodeURIComponent(search)}&limit=0`
     : 'https://dummyjson.com/products?limit=0';
 
 
-  // Fetch products from the server.
   const {
-    data,
-    isLoading,
-    error
-  } = useFetch(apiUrl);
+    data: productsData,
+    isLoading: productsLoading,
+    error: productsError
+  } = useFetch(productsUrl);
 
 
-  // Runs every time we type.
+  // ==================================================
+  // CATEGORIES API
+  // ==================================================
+
+  // Load all categories automatically.
+  const {
+    data: categories,
+    isLoading: categoriesLoading,
+    error: categoriesError
+  } = useFetch(
+    'https://dummyjson.com/products/categories'
+  );
+
+
+  // ==================================================
+  // SEARCH INPUT
+  // ==================================================
+
   function handleSearchChange(event) {
-    const newSearch = event.target.value;
-
-
-    // If search becomes empty,
-    // go back to the normal Home URL.
-    if (newSearch.trim() === '') {
-      navigate('/');
-      return;
-    }
-
-
-    // Change URL immediately.
+    // Only change the input immediately.
     //
-    // Example:
-    // p
-    // /search?q=p
-    //
-    // phone
-    // /search?q=phone
-    navigate(
-      `/search?q=${encodeURIComponent(newSearch)}`,
-      {
-        replace: true
-      }
+    // Debounce will handle the actual search.
+    setSearchInput(
+      event.target.value
     );
   }
 
 
-  // Show loading while waiting for the server.
-  if (isLoading) {
+  // ==================================================
+  // CATEGORY
+  // ==================================================
+
+  function handleCategory(newCategory) {
+    // Save selected category.
+    setCategory(newCategory);
+
+
+    // Start again from page 1.
+    setPage(1);
+  }
+
+
+  // ==================================================
+  // LOADING
+  // ==================================================
+
+  if (
+    productsLoading ||
+    categoriesLoading
+  ) {
     return (
       <h2 className="loadingPage">
         Loading...
@@ -96,33 +228,87 @@ function Home() {
   }
 
 
-  // Show error if request failed.
-  if (error) {
+  // ==================================================
+  // ERROR
+  // ==================================================
+
+  if (
+    productsError ||
+    categoriesError
+  ) {
     return (
       <h2 className="loadingPage">
-        Error: {error}
+        Error: {
+          productsError ||
+          categoriesError
+        }
       </h2>
     );
   }
 
 
-  // The API already handled the search.
+  // ==================================================
+  // CATEGORY FILTER
+  // ==================================================
+
+  // Search is already handled by the API.
   //
-  // Here we only filter by category.
-  const filteredProducts = data.products.filter(product => {
+  // Here we only filter the returned products
+  // by the selected category.
+  const filteredProducts =
+    productsData.products.filter(product => {
 
-    const matchesCategory =
-      category === '' ||
-      product.category === category;
+      const matchesCategory =
+        category === '' ||
+        product.category === category;
 
 
-    return matchesCategory;
-  });
+      return matchesCategory;
+    });
 
+
+  // ==================================================
+  // PAGINATION
+  // ==================================================
+
+  // Page 1:
+  // startIndex = 0
+  //
+  // Page 2:
+  // startIndex = 20
+  //
+  // Page 3:
+  // startIndex = 40
+  const startIndex =
+    (page - 1) * itemsPerPage;
+
+
+  const endIndex =
+    startIndex + itemsPerPage;
+
+
+  // Take only 20 products.
+  const visibleProducts =
+    filteredProducts.slice(
+      startIndex,
+      endIndex
+    );
+
+
+  // Calculate number of pages.
+  const totalPages = Math.ceil(
+    filteredProducts.length / itemsPerPage
+  );
+
+
+  // ==================================================
+  // JSX
+  // ==================================================
 
   return (
     <main className="main">
 
+      {/* PAGE TITLE */}
       <h1 className="title">
         Latest Products
       </h1>
@@ -130,83 +316,191 @@ function Home() {
 
       <hr className="line" />
 
+{/* SEARCH + CLEAR FILTERS */}
+<div className="searchArea">
 
-      {/* CATEGORY FILTERS */}
-      <div className="categories">
+  <div className="searchBox">
 
-        <button
-          className={category === '' ? 'active' : ''}
-          onClick={() => setCategory('')}
-        >
-          All
-        </button>
+    <input
+      type="text"
+      value={searchInput}
+      onChange={handleSearchChange}
+      placeholder="Search products..."
+      autoFocus
+    />
 
-
-        <button
-          className={category === 'beauty' ? 'active' : ''}
-          onClick={() => setCategory('beauty')}
-        >
-          Beauty
-        </button>
+  </div>
 
 
-        <button
-          className={category === 'furniture' ? 'active' : ''}
-          onClick={() => setCategory('furniture')}
-        >
-          Furniture
-        </button>
+  <button
+    className="clearFiltersButton"
+    onClick={handleClearFilters}
+  >
+    Clear filters
+  </button>
+
+</div>
 
 
-        <button
-          className={category === 'groceries' ? 'active' : ''}
-          onClick={() => setCategory('groceries')}
-        >
-          Groceries
-        </button>
+      {/* MAIN SHOP LAYOUT */}
+      <div className="shopLayout">
 
 
-        <button
-          className={category === 'fragrances' ? 'active' : ''}
-          onClick={() => setCategory('fragrances')}
-        >
-          Fragrances
-        </button>
+        {/* ==========================================
+            LEFT SIDEBAR
+            ========================================== */}
 
-      </div>
+        <aside className="sidebar">
 
-
-      {/* SEARCH */}
-      <div className="searchBox">
-
-        <input
-          type="text"
-          value={search}
-          onChange={handleSearchChange}
-          placeholder="Search products..."
-          autoFocus
-        />
-
-      </div>
+          <h3>
+            Categories
+          </h3>
 
 
-      {/* PRODUCTS */}
-      <div className="productsGrid">
+          {/* ALL */}
+          <button
+            className={
+              category === ''
+                ? 'active'
+                : ''
+            }
+            onClick={() =>
+              handleCategory('')
+            }
+          >
+            All
+          </button>
 
-        {filteredProducts.map(product => (
 
-          <ProductCard
-            key={product.id}
-            product={product}
-          />
+          {/* CATEGORIES FROM API */}
+          {categories.map(categoryItem => (
 
-        ))}
+            <button
+              key={categoryItem.slug}
+              className={
+                category === categoryItem.slug
+                  ? 'active'
+                  : ''
+              }
+              onClick={() =>
+                handleCategory(
+                  categoryItem.slug
+                )
+              }
+            >
+              {categoryItem.name}
+            </button>
+
+          ))}
+
+        </aside>
+
+
+        {/* ==========================================
+            RIGHT SIDE
+            ========================================== */}
+
+        <section className="productsSection">
+
+
+          {/* NUMBER OF RESULTS */}
+          <p className="resultsCount">
+            {filteredProducts.length} products
+          </p>
+
+
+          {/* PRODUCTS */}
+          {visibleProducts.length > 0 ? (
+
+            <div className="productsGrid">
+
+              {visibleProducts.map(product => (
+
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                />
+
+              ))}
+
+            </div>
+
+          ) : (
+
+            <p className="noResults">
+              No products found.
+            </p>
+
+          )}
+
+
+          {/* PAGINATION */}
+          {totalPages > 1 && (
+
+            <div className="pagination">
+
+              <button
+                disabled={page === 1}
+                onClick={() =>
+                  setPage(page - 1)
+                }
+              >
+                ← Previous
+              </button>
+
+
+              <span>
+                Page {page} of {totalPages}
+              </span>
+
+
+              <button
+                disabled={
+                  page === totalPages
+                }
+                onClick={() =>
+                  setPage(page + 1)
+                }
+              >
+                Next →
+              </button>
+
+            </div>
+
+          )}
+
+        </section>
 
       </div>
 
     </main>
   );
+
+  // ==================================================
+// CLEAR FILTERS
+// ==================================================
+
+function handleClearFilters() {
+  // Clear the search input.
+  setSearchInput('');
+
+  // Return category to All.
+  setCategory('');
+
+  // Return pagination to page 1.
+  setPage(1);
+
+  // Remove /search?q=... from the URL.
+  navigate(
+    '/',
+    {
+      replace: true
+    }
+  );
 }
+}
+
+
 
 
 export default Home;
