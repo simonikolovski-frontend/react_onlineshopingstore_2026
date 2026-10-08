@@ -94,3 +94,31 @@
   background-color: #d6a85f;
   color: #111315;
 }
+
+.detailsLink {
+  display: block;
+
+  width: 100%;
+
+  margin-top: 8px;
+  padding: 10px 14px;
+
+  background-color: transparent;
+  color: #d6a85f;
+
+  border: 1px solid #d6a85f;
+  border-radius: 8px;
+
+  text-align: center;
+  text-decoration: none;
+
+  font-weight: bold;
+
+  transition: 0.2s;
+}
+
+
+.detailsLink:hover {
+  background-color: #d6a85f;
+  color: #111315;
+}
