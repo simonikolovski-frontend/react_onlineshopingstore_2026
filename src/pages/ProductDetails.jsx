@@ -1,18 +1,22 @@
-// useParams reads the id from the URL.
+// useParams reads the product ID from the URL.
+// useNavigate lets us go back to the previous page.
 import {
   useParams,
   useNavigate
 } from 'react-router-dom';
 
-// Our custom fetch hook.
 import useFetch from '../hooks/useFetch.jsx';
 
 
 function ProductDetails() {
   // Example:
-  // /products/4
-  // id = 4
+  // /products/7
+  //
+  // id = "7"
   const { id } = useParams();
+
+
+  // Gives us the navigate function.
   const navigate = useNavigate();
 
 
@@ -26,35 +30,42 @@ function ProductDetails() {
   );
 
 
-  // While waiting for the API.
-if (isLoading) {
-  return (
-    <div className="loadingPage">
-      <p>Loading product...</p>
-      <p>Ако го читаш ова земи си појак интернет за побрзо да ти отвара </p>
-    </div>
-  );
-}
+  // Loading state.
+  if (isLoading) {
+    return (
+      <h2 className="loadingPage">
+        Loading...
+      </h2>
+    );
+  }
 
 
-  // If something went wrong.
+  // Error state.
   if (error) {
-    return <h2>Error: {error}</h2>;
+    return (
+      <h2 className="loadingPage">
+        Error: {error}
+      </h2>
+    );
   }
 
 
   return (
     <main className="detailsPage">
-        <button
-             className="backButton"
-              onClick={() => navigate(-1)}
-            >
-             ← Back
-            </button>
 
+      {/* BACK BUTTON */}
+      <button
+        className="backButton"
+        onClick={() => navigate(-1)}
+      >
+        ← Back
+      </button>
+
+
+      {/* PRODUCT DETAILS */}
       <div className="productDetails">
 
-        {/* PRODUCT IMAGE */}
+        {/* IMAGE */}
         <div className="detailsImage">
 
           <img
@@ -65,7 +76,7 @@ if (isLoading) {
         </div>
 
 
-        {/* PRODUCT INFORMATION */}
+        {/* INFORMATION */}
         <div className="detailsInfo">
 
           <span className="detailsCategory">

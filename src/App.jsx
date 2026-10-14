@@ -1,62 +1,104 @@
+// Routes and Route control which page is shown.
 import {
   Routes,
   Route
 } from 'react-router-dom';
 
-import Header from './components/Header.jsx';
 
+// Shared layout.
+// Layout contains Header + Outlet.
+import Layout from './layouts/Layout.jsx';
+
+
+// Pages.
 import Home from './pages/Home.jsx';
 import About from './pages/About.jsx';
 import ProductDetails from './pages/ProductDetails.jsx';
 import NotFound from './pages/NotFound.jsx';
+
 
 import './App.css';
 
 
 function App() {
   return (
-    <>
-      <Header />
+    <Routes>
 
+      {/* ==========================================
+          MAIN LAYOUT
+          ========================================== */}
 
-      <Routes>
+      <Route
+        path="/"
+        element={<Layout />}
+      >
 
-        {/* HOME */}
+        {/* HOME
+            URL: /
+        */}
         <Route
-          path="/"
+          index
+          element={<Home />}
+        />
+
+        {/* PRODUCTS LIST
+    URL: /products
+*/}
+<Route
+  path="products"
+  element={<Home />}
+/>
+
+
+        {/* SEARCH
+            URL:
+            /search?q=phone
+
+            We use the same Home component
+            because Home already contains
+            search, categories and products.
+        */}
+        <Route
+          path="search"
           element={<Home />}
         />
 
 
-        {/* SEARCH - same Home design */}
+        {/* ABOUT
+            URL: /about
+        */}
         <Route
-          path="/search"
-          element={<Home />}
-        />
-
-
-        {/* ABOUT */}
-        <Route
-          path="/about"
+          path="about"
           element={<About />}
         />
 
 
-        {/* PRODUCT DETAILS */}
+        {/* PRODUCT DETAILS
+
+            Example:
+            /products/5
+
+            id = 5
+        */}
         <Route
-          path="/products/:id"
+          path="products/:id"
           element={<ProductDetails />}
         />
 
 
-        {/* UNKNOWN URL */}
+        {/* 404
+
+            Any URL that does not match
+            the routes above comes here.
+        */}
         <Route
           path="*"
           element={<NotFound />}
         />
 
-      </Routes>
-    </>
+      </Route>
+
+    </Routes>
   );
 }
 

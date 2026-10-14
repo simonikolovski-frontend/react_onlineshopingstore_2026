@@ -1,19 +1,24 @@
-// NavLink lets us navigate without reloading the page.
+// NavLink is used for navigation.
+// It also tells us which link is currently active.
 import { NavLink } from 'react-router-dom';
+
 
 function Header() {
   return (
     <header className="header">
 
+      {/* LOGO */}
       <div className="logo">
         Ecommerce
       </div>
 
 
+      {/* NAVIGATION */}
       <nav className="nav">
 
         <NavLink
           to="/"
+          end
           className={({ isActive }) =>
             isActive ? 'active' : ''
           }
@@ -34,6 +39,7 @@ function Header() {
       </nav>
 
 
+      {/* HEADER BUTTONS */}
       <div className="headerButtons">
 
         <button>
@@ -53,5 +59,6 @@ function Header() {
     </header>
   );
 }
+
 
 export default Header;
