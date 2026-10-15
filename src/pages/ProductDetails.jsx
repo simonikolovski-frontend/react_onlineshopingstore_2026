@@ -5,7 +5,13 @@ import {
   useNavigate
 } from 'react-router-dom';
 
+
+// Custom hook for fetching data.
 import useFetch from '../hooks/useFetch.jsx';
+
+
+// Custom hook for using the global cart.
+import { useCart } from '../context/CartContext.jsx';
 
 
 function ProductDetails() {
@@ -16,11 +22,15 @@ function ProductDetails() {
   const { id } = useParams();
 
 
-  // Gives us the navigate function.
+  // Used for the Back button.
   const navigate = useNavigate();
 
 
-  // Fetch only the selected product.
+  // Get addItem function from CartContext.
+  const { addItem } = useCart();
+
+
+  // Fetch the selected product.
   const {
     data: product,
     isLoading,
@@ -30,7 +40,10 @@ function ProductDetails() {
   );
 
 
-  // Loading state.
+  // ==================================================
+  // LOADING
+  // ==================================================
+
   if (isLoading) {
     return (
       <h2 className="loadingPage">
@@ -40,7 +53,10 @@ function ProductDetails() {
   }
 
 
-  // Error state.
+  // ==================================================
+  // ERROR
+  // ==================================================
+
   if (error) {
     return (
       <h2 className="loadingPage">
@@ -49,6 +65,10 @@ function ProductDetails() {
     );
   }
 
+
+  // ==================================================
+  // PAGE
+  // ==================================================
 
   return (
     <main className="detailsPage">
@@ -62,10 +82,14 @@ function ProductDetails() {
       </button>
 
 
-      {/* PRODUCT DETAILS */}
+      {/* PRODUCT DETAILS CARD */}
       <div className="productDetails">
 
-        {/* IMAGE */}
+
+        {/* ==========================================
+            PRODUCT IMAGE
+            ========================================== */}
+
         <div className="detailsImage">
 
           <img
@@ -76,19 +100,27 @@ function ProductDetails() {
         </div>
 
 
-        {/* INFORMATION */}
+        {/* ==========================================
+            PRODUCT INFORMATION
+            ========================================== */}
+
         <div className="detailsInfo">
 
+          {/* Category */}
           <span className="detailsCategory">
             {product.category}
           </span>
 
 
+          {/* Product title */}
           <h1>
             {product.title}
           </h1>
 
 
+          {/* Brand
+              Only show it if the product has a brand.
+          */}
           {product.brand && (
             <p className="detailsBrand">
               Brand: {product.brand}
@@ -96,29 +128,46 @@ function ProductDetails() {
           )}
 
 
+          {/* Rating */}
           <p className="detailsRating">
             ⭐ {product.rating} / 5
           </p>
 
 
+          {/* Price */}
           <p className="detailsPrice">
             ${product.price}
           </p>
 
 
+          {/* Description */}
           <p className="detailsDescription">
             {product.description}
           </p>
 
 
+          {/* Availability */}
           <p className="detailsStock">
             {product.availabilityStatus}
           </p>
 
 
+          {/* Shipping */}
           <p className="detailsShipping">
             {product.shippingInformation}
           </p>
+
+
+          {/* ==========================================
+              ADD TO CART
+              ========================================== */}
+
+          <button
+            className="addCartButton"
+            onClick={() => addItem(product)}
+          >
+            Add to Cart
+          </button>
 
         </div>
 

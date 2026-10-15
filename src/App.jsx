@@ -1,4 +1,5 @@
-// Routes and Route control which page is shown.
+// Routes holds all routes in our application.
+// Route defines one route.
 import {
   Routes,
   Route
@@ -6,7 +7,6 @@ import {
 
 
 // Shared layout.
-// Layout contains Header + Outlet.
 import Layout from './layouts/Layout.jsx';
 
 
@@ -14,6 +14,7 @@ import Layout from './layouts/Layout.jsx';
 import Home from './pages/Home.jsx';
 import About from './pages/About.jsx';
 import ProductDetails from './pages/ProductDetails.jsx';
+import Cart from './pages/Cart.jsx';
 import NotFound from './pages/NotFound.jsx';
 
 
@@ -21,17 +22,23 @@ import './App.css';
 
 
 function App() {
+
   return (
     <Routes>
 
       {/* ==========================================
-          MAIN LAYOUT
-          ========================================== */}
+          SHARED LAYOUT
 
+          All routes inside this Route use:
+          Header
+          Breadcrumb
+          Outlet
+          ========================================== */}
       <Route
         path="/"
         element={<Layout />}
       >
+
 
         {/* HOME
             URL: /
@@ -41,22 +48,19 @@ function App() {
           element={<Home />}
         />
 
-        {/* PRODUCTS LIST
-    URL: /products
-*/}
-<Route
-  path="products"
-  element={<Home />}
-/>
+
+        {/* PRODUCTS
+            URL: /products
+        */}
+        <Route
+          path="products"
+          element={<Home />}
+        />
 
 
         {/* SEARCH
-            URL:
+            Example:
             /search?q=phone
-
-            We use the same Home component
-            because Home already contains
-            search, categories and products.
         */}
         <Route
           path="search"
@@ -74,11 +78,8 @@ function App() {
 
 
         {/* PRODUCT DETAILS
-
             Example:
-            /products/5
-
-            id = 5
+            /products/12
         */}
         <Route
           path="products/:id"
@@ -86,11 +87,23 @@ function App() {
         />
 
 
-        {/* 404
+        {/* ==========================================
+            CART
 
-            Any URL that does not match
-            the routes above comes here.
-        */}
+            URL:
+            /cart
+            ========================================== */}
+        <Route
+          path="cart"
+          element={<Cart />}
+        />
+
+
+        {/* ==========================================
+            404
+
+            Any route that does not exist.
+            ========================================== */}
         <Route
           path="*"
           element={<NotFound />}

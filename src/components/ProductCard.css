@@ -122,3 +122,22 @@
   background-color: #d6a85f;
   color: #111315;
 }
+
+/* ==================================================
+   DARK THEME - SHADOW ONLY ON HOVER
+   ================================================== */
+
+/* Normally there is NO light shadow */
+body.darkTheme .card {
+  box-shadow: none;
+}
+
+
+/* Light shadow appears only when we hover */
+body.darkTheme .card:hover {
+  box-shadow:
+    0 -10px 25px rgba(255, 255, 255, 0.14),
+    0 10px 25px rgba(255, 255, 255, 0.14),
+    -8px 0 20px rgba(255, 255, 255, 0.10),
+    8px 0 20px rgba(255, 255, 255, 0.10);
+}
