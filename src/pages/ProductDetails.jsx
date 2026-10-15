@@ -1,22 +1,24 @@
 // useParams reads the product ID from the URL.
-// useNavigate lets us go back to the previous page.
+// useNavigate lets us go back.
 import {
   useParams,
   useNavigate
 } from 'react-router-dom';
 
 
-// Custom hook for fetching product data.
-import useFetch from '../hooks/useFetch.jsx';
+// New reusable API hook.
+import { useApi } from '../hooks/useApi.js';
+
+
+// Products API module.
+import { products } from '../api/products.js';
 
 
 // Cart Context.
-// addItem adds a product to the global cart.
 import { useCart } from '../context/CartContext.jsx';
 
 
 // Auth Context.
-// user tells us if someone is logged in.
 import { useAuth } from '../context/AuthContext.jsx';
 
 
@@ -26,14 +28,14 @@ function ProductDetails() {
   // ROUTER
   // ==================================================
 
-  // Example URL:
+  // Example:
   // /products/7
   //
   // id = "7"
   const { id } = useParams();
 
 
-  // Used for the Back button.
+  // Used by the Back button.
   const navigate = useNavigate();
 
 
@@ -41,7 +43,6 @@ function ProductDetails() {
   // CART CONTEXT
   // ==================================================
 
-  // Get addItem from CartContext.
   const { addItem } = useCart();
 
 
@@ -49,37 +50,33 @@ function ProductDetails() {
   // AUTH CONTEXT
   // ==================================================
 
-  // user:
-  //
-  // null
-  // = nobody is logged in
-  //
-  // object
-  // = user is logged in
   const { user } = useAuth();
 
 
   // ==================================================
-  // FETCH PRODUCT
+  // LOAD PRODUCT FROM API
   // ==================================================
 
+  // Instead of:
+  //
+  // we now use our API layer.
   const {
     data: product,
-    isLoading,
+    loading,
     error
-  } = useFetch(
-    `https://dummyjson.com/products/${id}`
+  } = useApi(
+    () => products.getById(id),
+    [id]
   );
 
 
   // ==================================================
-  // ADD PRODUCT TO CART
+  // ADD TO CART
   // ==================================================
 
   function handleAddToCart() {
 
-    // If there is no logged-in user,
-    // stop here.
+    // Guest users cannot add products.
     if (!user) {
 
       alert(
@@ -90,10 +87,8 @@ function ProductDetails() {
     }
 
 
-    // If user exists,
-    // add the product normally.
+    // Logged-in user.
     addItem(product);
-
   }
 
 
@@ -101,14 +96,13 @@ function ProductDetails() {
   // LOADING
   // ==================================================
 
-  if (isLoading) {
+  if (loading) {
 
     return (
       <h2 className="loadingPage">
         Loading...
       </h2>
     );
-
   }
 
 
@@ -120,24 +114,21 @@ function ProductDetails() {
 
     return (
       <h2 className="loadingPage">
-        Error: {error}
+        Error: {error.message}
       </h2>
     );
-
   }
 
 
   // ==================================================
-  // PRODUCT DETAILS PAGE
+  // PRODUCT DETAILS
   // ==================================================
 
   return (
     <main className="detailsPage">
 
 
-      {/* ==========================================
-          BACK BUTTON
-          ========================================== */}
+      {/* BACK BUTTON */}
 
       <button
         className="backButton"
@@ -147,16 +138,12 @@ function ProductDetails() {
       </button>
 
 
-      {/* ==========================================
-          PRODUCT CARD
-          ========================================== */}
+      {/* PRODUCT CARD */}
 
       <div className="productDetails">
 
 
-        {/* ========================================
-            PRODUCT IMAGE
-            ======================================== */}
+        {/* PRODUCT IMAGE */}
 
         <div className="detailsImage">
 
@@ -168,9 +155,7 @@ function ProductDetails() {
         </div>
 
 
-        {/* ========================================
-            PRODUCT INFORMATION
-            ======================================== */}
+        {/* PRODUCT INFORMATION */}
 
         <div className="detailsInfo">
 
@@ -235,19 +220,15 @@ function ProductDetails() {
           </p>
 
 
-          {/* ======================================
-              ADD TO CART
-              ====================================== */}
+          {/* ADD TO CART */}
 
           <button
             className="addCartButton"
             onClick={handleAddToCart}
           >
-
             {user
               ? 'Add to Cart'
               : 'Login to Add to Cart'}
-
           </button>
 
 

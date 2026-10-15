@@ -1,11 +1,3 @@
-// useState stores the product name.
-// useEffect loads the product when the URL changes.
-import {
-  useState,
-  useEffect
-} from 'react';
-
-
 // Link creates navigation links.
 // useLocation gives us the current URL.
 import {
@@ -14,92 +6,89 @@ import {
 } from 'react-router-dom';
 
 
+// Our reusable API hook.
+import { useApi } from '../hooks/useApi.js';
+
+
+// Products API module.
+import { products } from '../api/products.js';
+
+
 function Breadcrumb() {
-  // Get information about the current URL.
+
+  // ==================================================
+  // CURRENT URL
+  // ==================================================
+
   const location = useLocation();
 
-
-  // Example:
-  // /products/12
   const pathname = location.pathname;
 
 
-  // Split the URL into parts.
+  // Example:
   //
   // /products/12
   //
   // becomes:
+  //
   // ["products", "12"]
   const parts = pathname
     .split('/')
     .filter(part => part !== '');
 
 
-  // Store the product name.
-  const [productName, setProductName] =
-    useState('');
+  // ==================================================
+  // PRODUCT ID
+  // ==================================================
+
+  // Check if we are on:
+  //
+  // /products/:id
+  const isProductDetails =
+    parts[0] === 'products' &&
+    parts[1];
+
+
+  // If this is a product details page,
+  // get the id.
+  //
+  // Otherwise use null.
+  const productId =
+    isProductDetails
+      ? parts[1]
+      : null;
 
 
   // ==================================================
   // LOAD PRODUCT NAME
   // ==================================================
 
-  useEffect(() => {
-    // Check if we are on:
-    // /products/:id
-    const isProductDetails =
-      parts[0] === 'products' &&
-      parts[1];
+  const {
+    data: product,
+    loading
+  } = useApi(
 
+    () => {
 
-    // If this is NOT a product details page,
-    // clear the product name.
-    if (!isProductDetails) {
-      setProductName('');
-      return;
-    }
-
-
-    // The second part of the URL is the product id.
-    //
-    // Example:
-    // /products/12
-    //
-    // productId = "12"
-    const productId = parts[1];
-
-
-    async function loadProduct() {
-      try {
-        // Load this product from DummyJSON.
-        const response = await fetch(
-          `https://dummyjson.com/products/${productId}`
-        );
-
-
-        const product = await response.json();
-
-
-        // Save the real product title.
-        setProductName(product.title);
-
-      } catch (error) {
-        console.log(error);
-
-        // If something goes wrong,
-        // show the id as fallback.
-        setProductName(productId);
+      // If we are NOT on a product page,
+      // there is nothing to load.
+      if (!productId) {
+        return Promise.resolve(null);
       }
-    }
 
 
-    loadProduct();
+      // Load product through our API layer.
+      return products.getById(productId);
 
-  }, [pathname]);
+    },
+
+    [productId]
+
+  );
 
 
   // ==================================================
-  // HOME
+  // HOME PAGE
   // ==================================================
 
   // Do not show breadcrumb on Home.
@@ -112,16 +101,14 @@ function Breadcrumb() {
   // PRODUCT DETAILS BREADCRUMB
   // ==================================================
 
-  // If URL is:
-  // /products/12
-  if (
-    parts[0] === 'products' &&
-    parts[1]
-  ) {
+  if (isProductDetails) {
+
     return (
       <div className="breadcrumb">
 
+
         {/* HOME */}
+
         <Link to="/">
           Home
         </Link>
@@ -133,6 +120,7 @@ function Breadcrumb() {
 
 
         {/* PRODUCTS */}
+
         <Link to="/products">
           Products
         </Link>
@@ -144,12 +132,19 @@ function Breadcrumb() {
 
 
         {/* PRODUCT NAME */}
+
         <span>
-          {productName || 'Loading...'}
+
+          {loading
+            ? 'Loading...'
+            : product?.title || `Product ${productId}`}
+
         </span>
+
 
       </div>
     );
+
   }
 
 
@@ -160,12 +155,27 @@ function Breadcrumb() {
   return (
     <div className="breadcrumb">
 
+
+      {/* HOME */}
+
       <Link to="/">
         Home
       </Link>
 
 
+      {/* OTHER URL PARTS */}
+
       {parts.map((part, index) => {
+
+        // Example:
+        //
+        // ["products", "12"]
+        //
+        // index 0:
+        // /products
+        //
+        // index 1:
+        // /products/12
         const path =
           '/' +
           parts
@@ -187,7 +197,9 @@ function Breadcrumb() {
 
           </span>
         );
+
       })}
+
 
     </div>
   );

@@ -1,5 +1,9 @@
 // NavLink is used for navigation.
-import { NavLink } from 'react-router-dom';
+// useNavigate lets us change the page from JavaScript.
+import {
+  NavLink,
+  useNavigate
+} from 'react-router-dom';
 
 
 // Cart Context.
@@ -17,11 +21,17 @@ import { useAuth } from '../context/AuthContext.jsx';
 function Header() {
 
   // ==================================================
+  // ROUTER
+  // ==================================================
+
+  // Used to move the user to another page.
+  const navigate = useNavigate();
+
+
+  // ==================================================
   // CART CONTEXT
   // ==================================================
 
-  // items = all products in the cart.
-  // clearCart = removes all products from the cart.
   const {
     items,
     clearCart
@@ -32,8 +42,6 @@ function Header() {
   // THEME CONTEXT
   // ==================================================
 
-  // theme tells us if the app is dark or light.
-  // toggleTheme changes between dark and light.
   const {
     theme,
     toggleTheme
@@ -44,9 +52,6 @@ function Header() {
   // AUTH CONTEXT
   // ==================================================
 
-  // user = logged-in user or null.
-  // login = logs the user in.
-  // logout = logs the user out.
   const {
     user,
     login,
@@ -58,18 +63,18 @@ function Header() {
   // LOGOUT USER
   // ==================================================
 
-  // When Logout is clicked:
-  //
-  // 1. Clear all products from the cart.
-  // 2. Log the user out.
-  //
-  // Because our cart uses localStorage,
-  // the empty cart will also be saved.
   function handleLogout() {
 
+    // Remove all cart products.
     clearCart();
 
+
+    // Log the user out.
     logout();
+
+
+    // Send the user to Home.
+    navigate('/');
 
   }
 
@@ -82,23 +87,16 @@ function Header() {
     <header className="header">
 
 
-      {/* ==========================================
-          LOGO
-          ========================================== */}
+      {/* LOGO */}
 
       <div className="logo">
         Ecommerce
       </div>
 
 
-      {/* ==========================================
-          NAVIGATION
-          ========================================== */}
+      {/* NAVIGATION */}
 
       <nav className="nav">
-
-
-        {/* HOME */}
 
         <NavLink
           to="/"
@@ -111,8 +109,6 @@ function Header() {
         </NavLink>
 
 
-        {/* ABOUT */}
-
         <NavLink
           to="/about"
           className={({ isActive }) =>
@@ -122,20 +118,15 @@ function Header() {
           About
         </NavLink>
 
-
       </nav>
 
 
-      {/* ==========================================
-          RIGHT SIDE BUTTONS
-          ========================================== */}
+      {/* HEADER BUTTONS */}
 
       <div className="headerButtons">
 
 
-        {/* ========================================
-            THEME BUTTON
-            ======================================== */}
+        {/* THEME */}
 
         <button
           onClick={toggleTheme}
@@ -146,24 +137,15 @@ function Header() {
         </button>
 
 
-        {/* ========================================
-            AUTH SECTION
-            ======================================== */}
+        {/* AUTH */}
 
         {user ? (
 
           <>
-            {/* LOGGED-IN USER NAME */}
-
             <span className="welcomeUser">
               Hello, {user.name}
             </span>
 
-
-            {/* LOGOUT
-                This now calls handleLogout().
-                It clears the cart first.
-            */}
 
             <button
               onClick={handleLogout}
@@ -175,16 +157,12 @@ function Header() {
         ) : (
 
           <>
-            {/* LOGIN */}
-
             <button
               onClick={login}
             >
               Login
             </button>
 
-
-            {/* REGISTER */}
 
             <button>
               Register
@@ -194,9 +172,7 @@ function Header() {
         )}
 
 
-        {/* ========================================
-            CART
-            ======================================== */}
+        {/* CART */}
 
         <NavLink
           to="/cart"
