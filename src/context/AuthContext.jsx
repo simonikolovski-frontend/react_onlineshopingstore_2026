@@ -1,11 +1,13 @@
 // createContext creates the shared auth context.
 // useContext lets components use auth.
-// useState stores the current user.
 import {
   createContext,
-  useContext,
-  useState
+  useContext
 } from 'react';
+
+
+// Our custom localStorage hook.
+import useLocalStorage from '../hooks/useLocalStorage.jsx';
 
 
 // ==================================================
@@ -21,9 +23,13 @@ const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
 
-  // null means:
-  // nobody is logged in.
-  const [user, setUser] = useState(null);
+  // Instead of useState,
+  // we now use useLocalStorage.
+  //
+  // "user" = key in localStorage
+  // null = default value when nobody is logged in
+  const [user, setUser] =
+    useLocalStorage('user', null);
 
 
   // ==================================================
@@ -32,13 +38,17 @@ export function AuthProvider({ children }) {
 
   function login() {
 
-    // For now we use a simple fake user.
-    // Later this could come from an API.
+    // For now this is a fake user.
+    // Later this could come from a real API.
     const loggedInUser = {
       name: 'User'
     };
 
 
+    // Save the user.
+    //
+    // Because setUser comes from useLocalStorage,
+    // this also saves the user in localStorage.
     setUser(loggedInUser);
 
   }
@@ -50,7 +60,8 @@ export function AuthProvider({ children }) {
 
   function logout() {
 
-    // null means no logged-in user.
+    // null means:
+    // nobody is logged in.
     setUser(null);
 
   }

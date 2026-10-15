@@ -6,16 +6,27 @@ import {
 } from 'react-router-dom';
 
 
-// Custom hook for fetching data.
+// Custom hook for fetching product data.
 import useFetch from '../hooks/useFetch.jsx';
 
 
-// Custom hook for using the global cart.
+// Cart Context.
+// addItem adds a product to the global cart.
 import { useCart } from '../context/CartContext.jsx';
 
 
+// Auth Context.
+// user tells us if someone is logged in.
+import { useAuth } from '../context/AuthContext.jsx';
+
+
 function ProductDetails() {
-  // Example:
+
+  // ==================================================
+  // ROUTER
+  // ==================================================
+
+  // Example URL:
   // /products/7
   //
   // id = "7"
@@ -26,11 +37,32 @@ function ProductDetails() {
   const navigate = useNavigate();
 
 
-  // Get addItem function from CartContext.
+  // ==================================================
+  // CART CONTEXT
+  // ==================================================
+
+  // Get addItem from CartContext.
   const { addItem } = useCart();
 
 
-  // Fetch the selected product.
+  // ==================================================
+  // AUTH CONTEXT
+  // ==================================================
+
+  // user:
+  //
+  // null
+  // = nobody is logged in
+  //
+  // object
+  // = user is logged in
+  const { user } = useAuth();
+
+
+  // ==================================================
+  // FETCH PRODUCT
+  // ==================================================
+
   const {
     data: product,
     isLoading,
@@ -41,15 +73,42 @@ function ProductDetails() {
 
 
   // ==================================================
+  // ADD PRODUCT TO CART
+  // ==================================================
+
+  function handleAddToCart() {
+
+    // If there is no logged-in user,
+    // stop here.
+    if (!user) {
+
+      alert(
+        'Please login first to add products to your cart.'
+      );
+
+      return;
+    }
+
+
+    // If user exists,
+    // add the product normally.
+    addItem(product);
+
+  }
+
+
+  // ==================================================
   // LOADING
   // ==================================================
 
   if (isLoading) {
+
     return (
       <h2 className="loadingPage">
         Loading...
       </h2>
     );
+
   }
 
 
@@ -58,22 +117,28 @@ function ProductDetails() {
   // ==================================================
 
   if (error) {
+
     return (
       <h2 className="loadingPage">
         Error: {error}
       </h2>
     );
+
   }
 
 
   // ==================================================
-  // PAGE
+  // PRODUCT DETAILS PAGE
   // ==================================================
 
   return (
     <main className="detailsPage">
 
-      {/* BACK BUTTON */}
+
+      {/* ==========================================
+          BACK BUTTON
+          ========================================== */}
+
       <button
         className="backButton"
         onClick={() => navigate(-1)}
@@ -82,13 +147,16 @@ function ProductDetails() {
       </button>
 
 
-      {/* PRODUCT DETAILS CARD */}
+      {/* ==========================================
+          PRODUCT CARD
+          ========================================== */}
+
       <div className="productDetails">
 
 
-        {/* ==========================================
+        {/* ========================================
             PRODUCT IMAGE
-            ========================================== */}
+            ======================================== */}
 
         <div className="detailsImage">
 
@@ -100,74 +168,88 @@ function ProductDetails() {
         </div>
 
 
-        {/* ==========================================
+        {/* ========================================
             PRODUCT INFORMATION
-            ========================================== */}
+            ======================================== */}
 
         <div className="detailsInfo">
 
-          {/* Category */}
+
+          {/* CATEGORY */}
+
           <span className="detailsCategory">
             {product.category}
           </span>
 
 
-          {/* Product title */}
+          {/* TITLE */}
+
           <h1>
             {product.title}
           </h1>
 
 
-          {/* Brand
-              Only show it if the product has a brand.
-          */}
+          {/* BRAND */}
+
           {product.brand && (
+
             <p className="detailsBrand">
               Brand: {product.brand}
             </p>
+
           )}
 
 
-          {/* Rating */}
+          {/* RATING */}
+
           <p className="detailsRating">
             ⭐ {product.rating} / 5
           </p>
 
 
-          {/* Price */}
+          {/* PRICE */}
+
           <p className="detailsPrice">
             ${product.price}
           </p>
 
 
-          {/* Description */}
+          {/* DESCRIPTION */}
+
           <p className="detailsDescription">
             {product.description}
           </p>
 
 
-          {/* Availability */}
+          {/* STOCK */}
+
           <p className="detailsStock">
             {product.availabilityStatus}
           </p>
 
 
-          {/* Shipping */}
+          {/* SHIPPING */}
+
           <p className="detailsShipping">
             {product.shippingInformation}
           </p>
 
 
-          {/* ==========================================
+          {/* ======================================
               ADD TO CART
-              ========================================== */}
+              ====================================== */}
 
           <button
             className="addCartButton"
-            onClick={() => addItem(product)}
+            onClick={handleAddToCart}
           >
-            Add to Cart
+
+            {user
+              ? 'Add to Cart'
+              : 'Login to Add to Cart'}
+
           </button>
+
 
         </div>
 

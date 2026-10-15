@@ -1,11 +1,17 @@
-// createContext creates our shared cart.
+// createContext creates the shared cart.
 // useContext lets components use the cart.
-// useReducer controls how the cart changes.
+// useReducer controls cart actions.
+// useEffect saves cart changes.
 import {
   createContext,
   useContext,
+  useEffect,
   useReducer
 } from 'react';
+
+
+// Our custom localStorage hook.
+import useLocalStorage from '../hooks/useLocalStorage.jsx';
 
 
 // ==================================================
@@ -19,7 +25,6 @@ const CartContext = createContext();
 // 2. INITIAL STATE
 // ==================================================
 
-// The cart starts empty.
 const initialState = {
   items: []
 };
@@ -29,10 +34,6 @@ const initialState = {
 // 3. REDUCER
 // ==================================================
 
-// The reducer decides HOW the cart changes.
-//
-// state  = current cart
-// action = what we want to do
 function cartReducer(state, action) {
 
   switch (action.type) {
@@ -94,13 +95,36 @@ function cartReducer(state, action) {
 
 export function CartProvider({ children }) {
 
+  // Read saved cart from localStorage.
+  //
+  // If nothing is saved yet,
+  // use the normal initialState.
+  const [savedCart, setSavedCart] =
+    useLocalStorage('cart', initialState);
+
+
+  // Start reducer with saved cart.
   const [state, dispatch] = useReducer(
     cartReducer,
-    initialState
+    savedCart
   );
 
 
-  // Add one product.
+  // ==================================================
+  // SAVE CART WHEN STATE CHANGES
+  // ==================================================
+
+  useEffect(() => {
+
+    setSavedCart(state);
+
+  }, [state, setSavedCart]);
+
+
+  // ==================================================
+  // ADD ITEM
+  // ==================================================
+
   function addItem(item) {
 
     dispatch({
@@ -111,7 +135,10 @@ export function CartProvider({ children }) {
   }
 
 
-  // Remove one product.
+  // ==================================================
+  // REMOVE ITEM
+  // ==================================================
+
   function removeItem(item) {
 
     dispatch({
@@ -122,7 +149,10 @@ export function CartProvider({ children }) {
   }
 
 
-  // Remove everything.
+  // ==================================================
+  // CLEAR CART
+  // ==================================================
+
   function clearCart() {
 
     dispatch({
@@ -131,6 +161,10 @@ export function CartProvider({ children }) {
 
   }
 
+
+  // ==================================================
+  // PROVIDER
+  // ==================================================
 
   return (
     <CartContext.Provider
@@ -141,7 +175,9 @@ export function CartProvider({ children }) {
         clearCart
       }}
     >
+
       {children}
+
     </CartContext.Provider>
   );
 }
@@ -157,9 +193,11 @@ export function useCart() {
 
 
   if (!context) {
+
     throw new Error(
       'useCart must be used within a CartProvider'
     );
+
   }
 
 

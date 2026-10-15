@@ -1,13 +1,15 @@
-// createContext creates our shared theme.
+// createContext creates the shared theme context.
 // useContext lets components use the theme.
-// useState stores dark/light.
-// useEffect changes the class on the body.
+// useEffect applies the theme class to <body>.
 import {
   createContext,
   useContext,
-  useEffect,
-  useState
+  useEffect
 } from 'react';
+
+
+// Our custom localStorage hook.
+import useLocalStorage from '../hooks/useLocalStorage.jsx';
 
 
 // ==================================================
@@ -23,12 +25,17 @@ const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
 
-  // App starts in dark mode.
-  const [theme, setTheme] = useState('dark');
+  // Instead of useState,
+  // we now use useLocalStorage.
+  //
+  // "theme" is the key in localStorage.
+  // "dark" is the default value.
+  const [theme, setTheme] =
+    useLocalStorage('theme', 'dark');
 
 
   // ==================================================
-  // CHANGE THE THEME
+  // TOGGLE THEME
   // ==================================================
 
   function toggleTheme() {
@@ -47,19 +54,19 @@ export function ThemeProvider({ children }) {
 
 
   // ==================================================
-  // APPLY THE THEME TO THE BODY
+  // APPLY THEME TO BODY
   // ==================================================
 
   useEffect(() => {
 
-    // Remove old theme classes first.
+    // Remove old theme classes.
     document.body.classList.remove(
       'darkTheme',
       'lightTheme'
     );
 
 
-    // Add the current theme class.
+    // Add the current theme.
     if (theme === 'dark') {
 
       document.body.classList.add(
@@ -106,11 +113,9 @@ export function useTheme() {
 
 
   if (!context) {
-
     throw new Error(
       'useTheme must be used within a ThemeProvider'
     );
-
   }
 
 

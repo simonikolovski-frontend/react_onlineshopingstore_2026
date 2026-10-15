@@ -20,8 +20,12 @@ function Header() {
   // CART CONTEXT
   // ==================================================
 
-  // Get all cart items.
-  const { items } = useCart();
+  // items = all products in the cart.
+  // clearCart = removes all products from the cart.
+  const {
+    items,
+    clearCart
+  } = useCart();
 
 
   // ==================================================
@@ -48,6 +52,26 @@ function Header() {
     login,
     logout
   } = useAuth();
+
+
+  // ==================================================
+  // LOGOUT USER
+  // ==================================================
+
+  // When Logout is clicked:
+  //
+  // 1. Clear all products from the cart.
+  // 2. Log the user out.
+  //
+  // Because our cart uses localStorage,
+  // the empty cart will also be saved.
+  function handleLogout() {
+
+    clearCart();
+
+    logout();
+
+  }
 
 
   // ==================================================
@@ -123,31 +147,26 @@ function Header() {
 
 
         {/* ========================================
-            AUTH
-
-            If user exists:
-            - show Hello, User
-            - show Logout
-
-            If user does not exist:
-            - show Login
-            - show Register
+            AUTH SECTION
             ======================================== */}
 
         {user ? (
 
           <>
-            {/* USER NAME */}
+            {/* LOGGED-IN USER NAME */}
 
             <span className="welcomeUser">
               Hello, {user.name}
             </span>
 
 
-            {/* LOGOUT */}
+            {/* LOGOUT
+                This now calls handleLogout().
+                It clears the cart first.
+            */}
 
             <button
-              onClick={logout}
+              onClick={handleLogout}
             >
               Logout
             </button>
