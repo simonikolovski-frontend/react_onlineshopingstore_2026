@@ -1,7 +1,7 @@
-// createContext creates the shared cart.
-// useContext lets components use the cart.
-// useReducer controls cart actions.
-// useEffect saves cart changes.
+// createContext creates the Cart Context.
+// useContext lets components read the cart.
+// useReducer manages the cart actions.
+// useEffect saves cart changes to localStorage.
 import {
   createContext,
   useContext,
@@ -15,14 +15,14 @@ import useLocalStorage from '../hooks/useLocalStorage.jsx';
 
 
 // ==================================================
-// 1. CREATE CONTEXT
+// 1. CREATE CART CONTEXT
 // ==================================================
 
-const CartContext = createContext();
+const CartContext = createContext(null);
 
 
 // ==================================================
-// 2. INITIAL STATE
+// 2. INITIAL CART STATE
 // ==================================================
 
 const initialState = {
@@ -31,18 +31,22 @@ const initialState = {
 
 
 // ==================================================
-// 3. REDUCER
+// 3. CART REDUCER
 // ==================================================
 
+// The reducer decides what should happen
+// when we dispatch an action.
 function cartReducer(state, action) {
 
   switch (action.type) {
+
 
     // ----------------------------------------------
     // ADD ITEM
     // ----------------------------------------------
 
     case 'ADD_ITEM':
+
       return {
         ...state,
 
@@ -58,11 +62,13 @@ function cartReducer(state, action) {
     // ----------------------------------------------
 
     case 'REMOVE_ITEM':
+
       return {
         ...state,
 
         items: state.items.filter(
-          item => item.id !== action.payload.id
+          item =>
+            item.id !== action.payload.id
         )
       };
 
@@ -72,20 +78,23 @@ function cartReducer(state, action) {
     // ----------------------------------------------
 
     case 'CLEAR_CART':
+
       return {
         ...state,
-
         items: []
       };
 
 
     // ----------------------------------------------
-    // DEFAULT
+    // UNKNOWN ACTION
     // ----------------------------------------------
 
     default:
+
       return state;
+
   }
+
 }
 
 
@@ -95,30 +104,44 @@ function cartReducer(state, action) {
 
 export function CartProvider({ children }) {
 
-  // Read saved cart from localStorage.
-  //
-  // If nothing is saved yet,
-  // use the normal initialState.
-  const [savedCart, setSavedCart] =
-    useLocalStorage('cart', initialState);
+  // ==================================================
+  // LOAD SAVED CART
+  // ==================================================
+
+  const [
+    savedCart,
+    setSavedCart
+  ] = useLocalStorage(
+    'cart',
+    initialState
+  );
 
 
-  // Start reducer with saved cart.
-  const [state, dispatch] = useReducer(
+  // ==================================================
+  // CREATE REDUCER STATE
+  // ==================================================
+
+  const [
+    state,
+    dispatch
+  ] = useReducer(
     cartReducer,
     savedCart
   );
 
 
   // ==================================================
-  // SAVE CART WHEN STATE CHANGES
+  // SAVE CART WHEN IT CHANGES
   // ==================================================
 
   useEffect(() => {
 
     setSavedCart(state);
 
-  }, [state, setSavedCart]);
+  }, [
+    state,
+    setSavedCart
+  ]);
 
 
   // ==================================================
@@ -163,11 +186,20 @@ export function CartProvider({ children }) {
 
 
   // ==================================================
-  // PROVIDER
+  // 5. PROVIDE CART DATA
   // ==================================================
 
+  // React 19 syntax:
+  //
+  // Instead of:
+  //
+  // <CartContext.Provider>
+  //
+  // we can use:
+  //
+  // <CartContext>
   return (
-    <CartContext.Provider
+    <CartContext
       value={{
         items: state.items,
         addItem,
@@ -178,21 +210,22 @@ export function CartProvider({ children }) {
 
       {children}
 
-    </CartContext.Provider>
+    </CartContext>
   );
 }
 
 
 // ==================================================
-// 5. CUSTOM HOOK
+// 6. CUSTOM CART HOOK
 // ==================================================
 
 export function useCart() {
 
-  const context = useContext(CartContext);
+  const context =
+    useContext(CartContext);
 
 
-  if (!context) {
+  if (context === null) {
 
     throw new Error(
       'useCart must be used within a CartProvider'

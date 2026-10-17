@@ -1,149 +1,237 @@
-// useParams reads the product ID from the URL.
-// useNavigate lets us go back.
+// ==================================================
+// REACT ROUTER
+// ==================================================
+
 import {
   useParams,
   useNavigate
 } from 'react-router-dom';
 
 
-// New reusable API hook.
-import { useApi } from '../hooks/useApi.js';
+// ==================================================
+// TANSTACK QUERY
+// ==================================================
+
+import {
+  useQuery
+} from '@tanstack/react-query';
 
 
-// Products API module.
-import { products } from '../api/products.js';
+// ==================================================
+// API
+// ==================================================
+
+import {
+  products
+} from '../api/products.js';
 
 
-// Cart Context.
-import { useCart } from '../context/CartContext.jsx';
+// ==================================================
+// CONTEXTS
+// ==================================================
+
+import {
+  useCart
+} from '../context/CartContext.jsx';
+
+import {
+  useAuth
+} from '../context/AuthContext.jsx';
+
+import {
+  useLanguage
+} from '../context/LanguageContext.jsx';
 
 
-// Auth Context.
-import { useAuth } from '../context/AuthContext.jsx';
-
+// ==================================================
+// PRODUCT DETAILS COMPONENT
+// ==================================================
 
 function ProductDetails() {
 
+
   // ==================================================
-  // ROUTER
+  // 1. ROUTER
   // ==================================================
 
+  // Get product ID from the URL.
+  //
   // Example:
-  // /products/7
   //
-  // id = "7"
-  const { id } = useParams();
-
-
-  // Used by the Back button.
-  const navigate = useNavigate();
-
-
-  // ==================================================
-  // CART CONTEXT
-  // ==================================================
-
-  const { addItem } = useCart();
-
-
-  // ==================================================
-  // AUTH CONTEXT
-  // ==================================================
-
-  const { user } = useAuth();
-
-
-  // ==================================================
-  // LOAD PRODUCT FROM API
-  // ==================================================
-
-  // Instead of:
+  // /products/5
   //
-  // we now use our API layer.
+  // id = "5"
+  const {
+    id
+  } = useParams();
+
+
+  const navigate =
+    useNavigate();
+
+
+  // ==================================================
+  // 2. CART CONTEXT
+  // ==================================================
+
+  const {
+    addItem
+  } = useCart();
+
+
+  // ==================================================
+  // 3. AUTH CONTEXT
+  // ==================================================
+
+  const {
+    user
+  } = useAuth();
+
+
+  // ==================================================
+  // 4. LANGUAGE CONTEXT
+  // ==================================================
+
+  // t() gives us the correct
+  // English or Macedonian text.
+  const {
+    t
+  } = useLanguage();
+
+
+  // ==================================================
+  // 5. PRODUCT QUERY
+  // ==================================================
+
   const {
     data: product,
-    loading,
+    isPending,
+    isError,
     error
-  } = useApi(
-    () => products.getById(id),
-    [id]
-  );
+  } = useQuery({
+
+
+    // Every product gets
+    // its own cache.
+    //
+    // Example:
+    //
+    // ['product', '5']
+    queryKey: [
+      'product',
+      id
+    ],
+
+
+    // Load the product
+    // from DummyJSON.
+    queryFn: ({ signal }) => {
+
+      return products.getById(
+        id,
+        {
+          signal
+        }
+      );
+
+    }
+
+  });
 
 
   // ==================================================
-  // ADD TO CART
+  // 6. ADD TO CART
   // ==================================================
 
   function handleAddToCart() {
 
-    // Guest users cannot add products.
+
+    // If user is NOT logged in,
+    // do not add the product.
     if (!user) {
 
       alert(
-        'Please login first to add products to your cart.'
+        t('loginFirstMessage')
       );
 
       return;
+
     }
 
 
-    // Logged-in user.
+    // User is logged in.
+    // Add product to cart.
     addItem(product);
+
   }
 
 
   // ==================================================
-  // LOADING
+  // 7. LOADING
   // ==================================================
 
-  if (loading) {
+  if (isPending) {
 
     return (
       <h2 className="loadingPage">
-        Loading...
+        {t('loading')}
       </h2>
     );
+
   }
 
 
   // ==================================================
-  // ERROR
+  // 8. ERROR
   // ==================================================
 
-  if (error) {
+  if (isError) {
 
     return (
       <h2 className="loadingPage">
-        Error: {error.message}
+
+        {t('error')}:
+        {' '}
+        {error.message}
+
       </h2>
     );
+
   }
 
 
   // ==================================================
-  // PRODUCT DETAILS
+  // 9. PRODUCT DETAILS PAGE
   // ==================================================
 
   return (
     <main className="detailsPage">
 
 
-      {/* BACK BUTTON */}
+      {/* ==========================================
+          BACK BUTTON
+          ========================================== */}
 
       <button
         className="backButton"
-        onClick={() => navigate(-1)}
+        onClick={() =>
+          navigate(-1)
+        }
       >
-        ← Back
+        ← {t('back')}
       </button>
 
 
-      {/* PRODUCT CARD */}
+      {/* ==========================================
+          PRODUCT DETAILS CARD
+          ========================================== */}
 
       <div className="productDetails">
 
 
-        {/* PRODUCT IMAGE */}
+        {/* ========================================
+            PRODUCT IMAGE
+            ======================================== */}
 
         <div className="detailsImage">
 
@@ -155,22 +243,31 @@ function ProductDetails() {
         </div>
 
 
-        {/* PRODUCT INFORMATION */}
+        {/* ========================================
+            PRODUCT INFORMATION
+            ======================================== */}
 
         <div className="detailsInfo">
 
 
-          {/* CATEGORY */}
+          {/* CATEGORY
+              Comes from DummyJSON.
+              We do NOT translate it. */}
 
           <span className="detailsCategory">
+
             {product.category}
+
           </span>
 
 
-          {/* TITLE */}
+          {/* PRODUCT TITLE
+              Comes from DummyJSON. */}
 
           <h1>
+
             {product.title}
+
           </h1>
 
 
@@ -179,7 +276,11 @@ function ProductDetails() {
           {product.brand && (
 
             <p className="detailsBrand">
-              Brand: {product.brand}
+
+              {t('brand')}:
+              {' '}
+              {product.brand}
+
             </p>
 
           )}
@@ -188,56 +289,77 @@ function ProductDetails() {
           {/* RATING */}
 
           <p className="detailsRating">
+
             ⭐ {product.rating} / 5
+
           </p>
 
 
           {/* PRICE */}
 
           <p className="detailsPrice">
+
             ${product.price}
+
           </p>
 
 
-          {/* DESCRIPTION */}
+          {/* DESCRIPTION
+              Comes from DummyJSON.
+              We do NOT translate it. */}
 
           <p className="detailsDescription">
+
             {product.description}
+
           </p>
 
 
-          {/* STOCK */}
+          {/* AVAILABILITY
+              Comes from DummyJSON. */}
 
           <p className="detailsStock">
+
             {product.availabilityStatus}
+
           </p>
 
 
-          {/* SHIPPING */}
+          {/* SHIPPING
+              Comes from DummyJSON. */}
 
           <p className="detailsShipping">
+
             {product.shippingInformation}
+
           </p>
 
 
-          {/* ADD TO CART */}
+          {/* ======================================
+              ADD TO CART BUTTON
+              ====================================== */}
 
           <button
             className="addCartButton"
             onClick={handleAddToCart}
           >
+
             {user
-              ? 'Add to Cart'
-              : 'Login to Add to Cart'}
+              ? t('addToCart')
+              : t('loginToAddToCart')}
+
           </button>
 
 
         </div>
 
+
       </div>
+
 
     </main>
   );
+
 }
 
 

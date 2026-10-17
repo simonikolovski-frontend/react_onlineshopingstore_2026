@@ -1,31 +1,46 @@
-// NavLink is used for navigation.
-// useNavigate lets us change the page from JavaScript.
+// ==================================================
+// REACT ROUTER
+// ==================================================
+
 import {
   NavLink,
   useNavigate
 } from 'react-router-dom';
 
 
-// Cart Context.
-import { useCart } from '../context/CartContext.jsx';
+// ==================================================
+// CONTEXTS
+// ==================================================
+
+import {
+  useCart
+} from '../context/CartContext.jsx';
+
+import {
+  useTheme
+} from '../context/ThemeContext.jsx';
+
+import {
+  useAuth
+} from '../context/AuthContext.jsx';
+
+import {
+  useLanguage
+} from '../context/LanguageContext.jsx';
 
 
-// Theme Context.
-import { useTheme } from '../context/ThemeContext.jsx';
-
-
-// Auth Context.
-import { useAuth } from '../context/AuthContext.jsx';
-
+// ==================================================
+// HEADER COMPONENT
+// ==================================================
 
 function Header() {
 
   // ==================================================
-  // ROUTER
+  // NAVIGATION
   // ==================================================
 
-  // Used to move the user to another page.
-  const navigate = useNavigate();
+  const navigate =
+    useNavigate();
 
 
   // ==================================================
@@ -60,20 +75,31 @@ function Header() {
 
 
   // ==================================================
-  // LOGOUT USER
+  // LANGUAGE CONTEXT
+  // ==================================================
+
+  const {
+    language,
+    changeLanguage,
+    t
+  } = useLanguage();
+
+
+  // ==================================================
+  // LOGOUT
   // ==================================================
 
   function handleLogout() {
 
-    // Remove all cart products.
+    // Clear cart.
     clearCart();
 
 
-    // Log the user out.
+    // Logout user.
     logout();
 
 
-    // Send the user to Home.
+    // Go back to Home.
     navigate('/');
 
   }
@@ -87,46 +113,64 @@ function Header() {
     <header className="header">
 
 
-      {/* LOGO */}
+      {/* ==========================================
+          LOGO
+          ========================================== */}
 
       <div className="logo">
         Ecommerce
       </div>
 
 
-      {/* NAVIGATION */}
+      {/* ==========================================
+          NAVIGATION
+          ========================================== */}
 
       <nav className="nav">
+
+
+        {/* HOME */}
 
         <NavLink
           to="/"
           end
           className={({ isActive }) =>
-            isActive ? 'active' : ''
+            isActive
+              ? 'active'
+              : ''
           }
         >
-          Home
+          {t('home')}
         </NavLink>
 
+
+        {/* ABOUT */}
 
         <NavLink
           to="/about"
           className={({ isActive }) =>
-            isActive ? 'active' : ''
+            isActive
+              ? 'active'
+              : ''
           }
         >
-          About
+          {t('about')}
         </NavLink>
+
 
       </nav>
 
 
-      {/* HEADER BUTTONS */}
+      {/* ==========================================
+          HEADER BUTTONS
+          ========================================== */}
 
       <div className="headerButtons">
 
 
-        {/* THEME */}
+        {/* ========================================
+            THEME BUTTON
+            ======================================== */}
 
         <button
           onClick={toggleTheme}
@@ -137,48 +181,81 @@ function Header() {
         </button>
 
 
-        {/* AUTH */}
+        {/* ========================================
+            LANGUAGE BUTTON
+            ======================================== */}
+
+        <button
+          onClick={changeLanguage}
+        >
+          {language}
+        </button>
+
+
+        {/* ========================================
+            AUTH BUTTONS
+            ======================================== */}
 
         {user ? (
 
           <>
+
+
+            {/* WELCOME USER */}
+
             <span className="welcomeUser">
-              Hello, {user.name}
+
+              {t('welcome')}, {user.name}
+
             </span>
 
+
+            {/* LOGOUT */}
 
             <button
               onClick={handleLogout}
             >
-              Logout
+              {t('logout')}
             </button>
+
+
           </>
 
         ) : (
 
           <>
+
+
+            {/* LOGIN */}
+
             <button
               onClick={login}
             >
-              Login
+              {t('login')}
             </button>
 
+
+            {/* REGISTER */}
 
             <button>
-              Register
+              {t('register')}
             </button>
+
+
           </>
 
         )}
 
 
-        {/* CART */}
+        {/* ========================================
+            CART
+            ======================================== */}
 
         <NavLink
           to="/cart"
           className="headerCartButton"
         >
-          Cart ({items.length})
+          {t('cart')} ({items.length})
         </NavLink>
 
 
@@ -187,6 +264,7 @@ function Header() {
 
     </header>
   );
+
 }
 
 

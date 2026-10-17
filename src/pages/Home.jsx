@@ -1,61 +1,113 @@
-// React state and effects.
+// ==================================================
+// REACT
+// ==================================================
+
 import {
   useState,
   useEffect
 } from 'react';
 
 
-// React Router.
+// ==================================================
+// REACT ROUTER
+// ==================================================
+
 import {
   useSearchParams,
   useNavigate
 } from 'react-router-dom';
 
 
-// API hooks.
-import { useApi } from '../hooks/useApi.js';
-import { useSearch } from '../hooks/useSearch.js';
+// ==================================================
+// TANSTACK QUERY
+// ==================================================
+
+import {
+  useQuery
+} from '@tanstack/react-query';
 
 
-// Products API.
-import { products } from '../api/products.js';
+// ==================================================
+// API
+// ==================================================
+
+import {
+  products
+} from '../api/products.js';
 
 
-// Product card.
-import ProductCard from '../components/ProductCard.jsx';
+// ==================================================
+// COMPONENTS
+// ==================================================
+
+import ProductCard
+  from '../components/ProductCard.jsx';
 
 
-// Styles.
+// ==================================================
+// LANGUAGE CONTEXT
+// ==================================================
+
+import {
+  useLanguage
+} from '../context/LanguageContext.jsx';
+
+
+// ==================================================
+// STYLES
+// ==================================================
+
 import '../App.css';
 
 
+// ==================================================
+// HOME COMPONENT
+// ==================================================
+
 function Home() {
 
-  // ==================================================
-  // CATEGORY
-  // ==================================================
-
-  const [category, setCategory] =
-    useState('');
-
 
   // ==================================================
-  // PAGINATION
+  // 1. LANGUAGE CONTEXT
   // ==================================================
 
-  const [page, setPage] =
-    useState(1);
+  // We only need t()
+  // because t() gives us the correct translation.
+  const {
+    t
+  } = useLanguage();
+
+
+  // ==================================================
+  // 2. CATEGORY STATE
+  // ==================================================
+
+  const [
+    category,
+    setCategory
+  ] = useState('');
+
+
+  // ==================================================
+  // 3. PAGINATION
+  // ==================================================
+
+  const [
+    page,
+    setPage
+  ] = useState(1);
 
 
   const itemsPerPage = 20;
 
 
   // ==================================================
-  // SEARCH URL
+  // 4. SEARCH FROM URL
   // ==================================================
 
-  const [searchParams] =
-    useSearchParams();
+  const [
+    searchParams
+  ] = useSearchParams();
 
 
   const navigate =
@@ -63,6 +115,7 @@ function Home() {
 
 
   // Example:
+  //
   // /search?q=phone
   //
   // search = "phone"
@@ -71,69 +124,82 @@ function Home() {
 
 
   // ==================================================
-  // SEARCH INPUT
+  // 5. SEARCH INPUT
   // ==================================================
 
-  // What the user is typing right now.
-  const [searchInput, setSearchInput] =
-    useState(search);
+  const [
+    searchInput,
+    setSearchInput
+  ] = useState(search);
 
 
   // ==================================================
-  // DEBOUNCE
+  // 6. SEARCH DEBOUNCE
   // ==================================================
 
   useEffect(() => {
 
-    // Wait 500ms.
-    const timer = setTimeout(() => {
+    const timer =
+      setTimeout(() => {
 
-      const term =
-        searchInput.trim();
-
-
-      // New search starts from page 1.
-      setPage(1);
+        const term =
+          searchInput.trim();
 
 
-      // Empty search = go Home.
-      if (term === '') {
+        // Every new search
+        // starts from page 1.
+        setPage(1);
 
-        if (search !== '') {
 
-          navigate(
-            '/',
-            {
-              replace: true
-            }
-          );
+        // ------------------------------------------
+        // EMPTY SEARCH
+        // ------------------------------------------
+
+        if (term === '') {
+
+          if (search !== '') {
+
+            navigate(
+              '/',
+              {
+                replace: true
+              }
+            );
+
+          }
+
+          return;
 
         }
 
-        return;
-      }
 
+        // ------------------------------------------
+        // SAME SEARCH
+        // ------------------------------------------
 
-      // If URL already has this search,
-      // do nothing.
-      if (term === search) {
-        return;
-      }
+        if (term === search) {
 
+          return;
 
-      // Put search into URL.
-      navigate(
-        `/search?q=${encodeURIComponent(term)}`,
-        {
-          replace: true
         }
-      );
-
-    }, 500);
 
 
-    // Cancel old timer
-    // when user types again.
+        // ------------------------------------------
+        // CHANGE URL
+        // ------------------------------------------
+
+        navigate(
+          `/search?q=${encodeURIComponent(term)}`,
+          {
+            replace: true
+          }
+        );
+
+      }, 500);
+
+
+    // Cancel the old timer
+    // if user types again.
     return () => {
 
       clearTimeout(timer);
@@ -148,7 +214,7 @@ function Home() {
 
 
   // ==================================================
-  // KEEP INPUT AND URL IN SYNC
+  // 7. KEEP INPUT SYNCED WITH URL
   // ==================================================
 
   useEffect(() => {
@@ -159,58 +225,101 @@ function Home() {
 
 
   // ==================================================
-  // LOAD ALL PRODUCTS
+  // 8. QUERY - ALL PRODUCTS
   // ==================================================
 
-  // This loads the normal product list.
-  //
-  // It runs once when Home opens.
   const {
     data: allProductsData,
-    loading: allProductsLoading,
+    isPending: allProductsPending,
     error: allProductsError
-  } = useApi(
-    () => products.getAll(),
-    []
-  );
+  } = useQuery({
+
+    queryKey: [
+      'products'
+    ],
+
+
+    queryFn: ({ signal }) => {
+
+      return products.getAll({
+        signal
+      });
+
+    },
+
+
+    // Only load all products
+    // when there is no search.
+    enabled: !search
+
+  });
 
 
   // ==================================================
-  // SEARCH PRODUCTS
+  // 9. QUERY - SEARCH PRODUCTS
   // ==================================================
 
-  // useSearch handles:
-  //
-  // - search request
-  // - loading
-  // - error
-  // - AbortController
-  //
-  // If search is empty,
-  // it does not send a search request.
   const {
     data: searchData,
-    loading: searchLoading,
+    isPending: searchPending,
     error: searchError
-  } = useSearch(search);
+  } = useQuery({
+
+    // Different search text
+    // creates a different cache.
+    queryKey: [
+      'products',
+      'search',
+      search
+    ],
+
+
+    queryFn: ({ signal }) => {
+
+      return products.search(
+        search,
+        {
+          signal
+        }
+      );
+
+    },
+
+
+    // Run only if search exists.
+    enabled: Boolean(search)
+
+  });
 
 
   // ==================================================
-  // LOAD CATEGORIES
+  // 10. QUERY - CATEGORIES
   // ==================================================
 
   const {
-    data: categories,
-    loading: categoriesLoading,
+    data: categories = [],
+    isPending: categoriesPending,
     error: categoriesError
-  } = useApi(
-    () => products.getCategories(),
-    []
-  );
+  } = useQuery({
+
+    queryKey: [
+      'productCategories'
+    ],
+
+
+    queryFn: ({ signal }) => {
+
+      return products.getCategories({
+        signal
+      });
+
+    }
+
+  });
 
 
   // ==================================================
-  // SEARCH INPUT CHANGE
+  // 11. SEARCH INPUT CHANGE
   // ==================================================
 
   function handleSearchChange(event) {
@@ -223,14 +332,17 @@ function Home() {
 
 
   // ==================================================
-  // CATEGORY CHANGE
+  // 12. CATEGORY CHANGE
   // ==================================================
 
   function handleCategory(
     newCategory
   ) {
 
-    setCategory(newCategory);
+    setCategory(
+      newCategory
+    );
+
 
     setPage(1);
 
@@ -238,7 +350,7 @@ function Home() {
 
 
   // ==================================================
-  // CLEAR FILTERS
+  // 13. CLEAR FILTERS
   // ==================================================
 
   function handleClearFilters() {
@@ -261,47 +373,39 @@ function Home() {
 
 
   // ==================================================
-  // CHOOSE WHICH DATA WE NEED
+  // 14. CHOOSE CORRECT PRODUCT DATA
   // ==================================================
 
-  // If we are searching:
-  //
-  // use searchData
-  //
-  // Otherwise:
-  //
-  // use allProductsData
   const productsData =
     search
       ? searchData
       : allProductsData;
 
 
-  // ==================================================
-  // LOADING
-  // ==================================================
-
-  // Categories must always load.
-  //
-  // If searching:
-  // check searchLoading.
-  //
-  // Otherwise:
-  // check allProductsLoading.
-  const productsLoading =
+  const productsPending =
     search
-      ? searchLoading
-      : allProductsLoading;
+      ? searchPending
+      : allProductsPending;
 
+
+  const productsError =
+    search
+      ? searchError
+      : allProductsError;
+
+
+  // ==================================================
+  // 15. LOADING
+  // ==================================================
 
   if (
-    productsLoading ||
-    categoriesLoading
+    productsPending ||
+    categoriesPending
   ) {
 
     return (
       <h2 className="loadingPage">
-        Loading...
+        {t('loading')}
       </h2>
     );
 
@@ -309,14 +413,8 @@ function Home() {
 
 
   // ==================================================
-  // ERROR
+  // 16. ERROR
   // ==================================================
-
-  const productsError =
-    search
-      ? searchError
-      : allProductsError;
-
 
   if (
     productsError ||
@@ -330,7 +428,12 @@ function Home() {
 
     return (
       <h2 className="loadingPage">
-        Error: {error.message}
+
+        {t('error')}
+        :
+        {' '}
+        {error.message}
+
       </h2>
     );
 
@@ -338,7 +441,7 @@ function Home() {
 
 
   // ==================================================
-  // PRODUCTS ARRAY
+  // 17. PRODUCTS ARRAY
   // ==================================================
 
   const allProducts =
@@ -346,32 +449,36 @@ function Home() {
 
 
   // ==================================================
-  // FILTER BY CATEGORY
+  // 18. FILTER BY CATEGORY
   // ==================================================
 
   const filteredProducts =
-    allProducts.filter(product => {
+    allProducts.filter(
+      product => {
 
-      const matchesCategory =
-        category === '' ||
-        product.category === category;
+        const matchesCategory =
+          category === '' ||
+          product.category === category;
 
 
-      return matchesCategory;
+        return matchesCategory;
 
-    });
+      }
+    );
 
 
   // ==================================================
-  // PAGINATION
+  // 19. PAGINATION
   // ==================================================
 
   const startIndex =
-    (page - 1) * itemsPerPage;
+    (page - 1) *
+    itemsPerPage;
 
 
   const endIndex =
-    startIndex + itemsPerPage;
+    startIndex +
+    itemsPerPage;
 
 
   const visibleProducts =
@@ -389,17 +496,19 @@ function Home() {
 
 
   // ==================================================
-  // PAGE
+  // 20. PAGE
   // ==================================================
 
   return (
     <main className="main">
 
 
-      {/* TITLE */}
+      {/* ==========================================
+          TITLE
+          ========================================== */}
 
       <h1 className="title">
-        Latest Products
+        {t('latestProducts')}
       </h1>
 
 
@@ -419,8 +528,7 @@ function Home() {
             type="text"
             value={searchInput}
             onChange={handleSearchChange}
-            placeholder="Search products..."
-            autoFocus
+            placeholder={t('searchProducts')}
           />
 
         </div>
@@ -430,7 +538,7 @@ function Home() {
           className="clearFiltersButton"
           onClick={handleClearFilters}
         >
-          Clear filters
+          {t('clearFilters')}
         </button>
 
 
@@ -438,21 +546,25 @@ function Home() {
 
 
       {/* ==========================================
-          SHOP
+          SHOP LAYOUT
           ========================================== */}
 
       <div className="shopLayout">
 
 
-        {/* SIDEBAR */}
+        {/* ========================================
+            CATEGORY SIDEBAR
+            ======================================== */}
 
         <aside className="sidebar">
 
 
           <h3>
-            Categories
+            {t('categories')}
           </h3>
 
+
+          {/* ALL */}
 
           <button
             className={
@@ -464,47 +576,71 @@ function Home() {
               handleCategory('')
             }
           >
-            All
+            {t('all')}
           </button>
 
 
-          {categories.map(categoryItem => (
+          {/* ======================================
+              CATEGORIES FROM API
 
-            <button
-              key={categoryItem.slug}
-              className={
-                category === categoryItem.slug
-                  ? 'active'
-                  : ''
-              }
-              onClick={() =>
-                handleCategory(
+              IMPORTANT:
+              We do NOT translate these.
+              DummyJSON gives us the names.
+              ====================================== */}
+
+          {categories.map(
+            categoryItem => (
+
+              <button
+                key={categoryItem.slug}
+                className={
+                  category ===
                   categoryItem.slug
-                )
-              }
-            >
-              {categoryItem.name}
-            </button>
+                    ? 'active'
+                    : ''
+                }
+                onClick={() =>
+                  handleCategory(
+                    categoryItem.slug
+                  )
+                }
+              >
 
-          ))}
+                {categoryItem.name}
+
+              </button>
+
+            )
+          )}
 
 
         </aside>
 
 
-        {/* PRODUCTS */}
+        {/* ========================================
+            PRODUCTS SECTION
+            ======================================== */}
 
         <section className="productsSection">
 
+
+          {/* RESULTS COUNT */}
 
           <p className="resultsCount">
 
             {filteredProducts.length}
             {' '}
-            products
+            {t('products')}
 
           </p>
 
+
+          {/* ======================================
+              PRODUCT CARDS
+
+              Product titles stay in English
+              because they come from DummyJSON.
+              ====================================== */}
 
           {visibleProducts.length > 0 ? (
 
@@ -526,43 +662,66 @@ function Home() {
           ) : (
 
             <p className="noResults">
-              No products found.
+              {t('noProducts')}
             </p>
 
           )}
 
 
-          {/* PAGINATION */}
+          {/* ======================================
+              PAGINATION
+              ====================================== */}
 
           {totalPages > 1 && (
 
             <div className="pagination">
 
 
-              <button
-                disabled={page === 1}
-                onClick={() =>
-                  setPage(page - 1)
-                }
-              >
-                ← Previous
-              </button>
-
-
-              <span>
-                Page {page} of {totalPages}
-              </span>
-
+              {/* PREVIOUS */}
 
               <button
                 disabled={
-                  page === totalPages
+                  page === 1
                 }
                 onClick={() =>
-                  setPage(page + 1)
+                  setPage(
+                    page - 1
+                  )
                 }
               >
-                Next →
+                ← {t('previous')}
+              </button>
+
+
+              {/* CURRENT PAGE */}
+
+              <span>
+
+                {t('page')}
+                {' '}
+                {page}
+                {' '}
+                {t('of')}
+                {' '}
+                {totalPages}
+
+              </span>
+
+
+              {/* NEXT */}
+
+              <button
+                disabled={
+                  page ===
+                  totalPages
+                }
+                onClick={() =>
+                  setPage(
+                    page + 1
+                  )
+                }
+              >
+                {t('next')} →
               </button>
 
 
@@ -579,6 +738,7 @@ function Home() {
 
     </main>
   );
+
 }
 
 

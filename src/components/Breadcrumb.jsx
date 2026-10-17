@@ -1,58 +1,93 @@
-// Link creates navigation links.
-// useLocation gives us the current URL.
+// ==================================================
+// REACT ROUTER
+// ==================================================
+
 import {
   Link,
   useLocation
 } from 'react-router-dom';
 
 
-// Our reusable API hook.
-import { useApi } from '../hooks/useApi.js';
+// ==================================================
+// TANSTACK QUERY
+// ==================================================
+
+import {
+  useQuery
+} from '@tanstack/react-query';
 
 
-// Products API module.
-import { products } from '../api/products.js';
+// ==================================================
+// API
+// ==================================================
 
+import {
+  products
+} from '../api/products.js';
+
+
+// ==================================================
+// LANGUAGE CONTEXT
+// ==================================================
+
+import {
+  useLanguage
+} from '../context/LanguageContext.jsx';
+
+
+// ==================================================
+// BREADCRUMB COMPONENT
+// ==================================================
 
 function Breadcrumb() {
 
+
   // ==================================================
-  // CURRENT URL
+  // 1. CURRENT URL
   // ==================================================
 
-  const location = useLocation();
+  const location =
+    useLocation();
 
-  const pathname = location.pathname;
+
+  const pathname =
+    location.pathname;
 
 
   // Example:
   //
-  // /products/12
+  // /products/5
   //
   // becomes:
   //
-  // ["products", "12"]
-  const parts = pathname
-    .split('/')
-    .filter(part => part !== '');
+  // ['products', '5']
+
+  const parts =
+    pathname
+      .split('/')
+      .filter(
+        part => part !== ''
+      );
 
 
   // ==================================================
-  // PRODUCT ID
+  // 2. LANGUAGE CONTEXT
   // ==================================================
 
-  // Check if we are on:
-  //
-  // /products/:id
+  const {
+    t
+  } = useLanguage();
+
+
+  // ==================================================
+  // 3. CHECK PRODUCT DETAILS PAGE
+  // ==================================================
+
   const isProductDetails =
     parts[0] === 'products' &&
     parts[1];
 
 
-  // If this is a product details page,
-  // get the id.
-  //
-  // Otherwise use null.
   const productId =
     isProductDetails
       ? parts[1]
@@ -60,45 +95,56 @@ function Breadcrumb() {
 
 
   // ==================================================
-  // LOAD PRODUCT NAME
+  // 4. PRODUCT QUERY
   // ==================================================
 
   const {
     data: product,
-    loading
-  } = useApi(
+    isPending
+  } = useQuery({
 
-    () => {
-
-      // If we are NOT on a product page,
-      // there is nothing to load.
-      if (!productId) {
-        return Promise.resolve(null);
-      }
+    // Same queryKey as ProductDetails.
+    queryKey: [
+      'product',
+      productId
+    ],
 
 
-      // Load product through our API layer.
-      return products.getById(productId);
+    queryFn: ({ signal }) => {
+
+      return products.getById(
+        productId,
+        {
+          signal
+        }
+      );
 
     },
 
-    [productId]
 
-  );
+    // Do not make request
+    // if there is no product ID.
+    enabled: Boolean(productId)
+
+  });
 
 
   // ==================================================
-  // HOME PAGE
+  // 5. HOME PAGE
   // ==================================================
 
-  // Do not show breadcrumb on Home.
+  // Do not show breadcrumb
+  // on the Home page.
+
   if (parts.length === 0) {
+
     return null;
+
   }
 
 
   // ==================================================
-  // PRODUCT DETAILS BREADCRUMB
+  // 6. PRODUCT DETAILS BREADCRUMB
   // ==================================================
 
   if (isProductDetails) {
@@ -110,7 +156,7 @@ function Breadcrumb() {
         {/* HOME */}
 
         <Link to="/">
-          Home
+          {t('home')}
         </Link>
 
 
@@ -122,7 +168,7 @@ function Breadcrumb() {
         {/* PRODUCTS */}
 
         <Link to="/products">
-          Products
+          {t('productsPage')}
         </Link>
 
 
@@ -131,13 +177,14 @@ function Breadcrumb() {
         </span>
 
 
-        {/* PRODUCT NAME */}
+        {/* PRODUCT TITLE */}
 
         <span>
 
-          {loading
-            ? 'Loading...'
-            : product?.title || `Product ${productId}`}
+          {isPending
+            ? t('loading')
+            : product?.title ||
+              `Product ${productId}`}
 
         </span>
 
@@ -149,7 +196,48 @@ function Breadcrumb() {
 
 
   // ==================================================
-  // OTHER PAGES
+  // 7. TRANSLATE ROUTE NAME
+  // ==================================================
+
+  function getPageName(part) {
+
+    if (part === 'about') {
+
+      return t('about');
+
+    }
+
+
+    if (part === 'cart') {
+
+      return t('cart');
+
+    }
+
+
+    if (part === 'products') {
+
+      return t('productsPage');
+
+    }
+
+
+    if (part === 'search') {
+
+      return t('searchPage');
+
+    }
+
+
+    // If we do not know the route,
+    // just show its original name.
+    return part;
+
+  }
+
+
+  // ==================================================
+  // 8. OTHER PAGES
   // ==================================================
 
   return (
@@ -159,50 +247,46 @@ function Breadcrumb() {
       {/* HOME */}
 
       <Link to="/">
-        Home
+        {t('home')}
       </Link>
 
 
       {/* OTHER URL PARTS */}
 
-      {parts.map((part, index) => {
+      {parts.map(
+        (part, index) => {
 
-        // Example:
-        //
-        // ["products", "12"]
-        //
-        // index 0:
-        // /products
-        //
-        // index 1:
-        // /products/12
-        const path =
-          '/' +
-          parts
-            .slice(0, index + 1)
-            .join('/');
+          const path =
+            '/' +
+            parts
+              .slice(0, index + 1)
+              .join('/');
 
 
-        return (
-          <span key={path}>
+          return (
+            <span key={path}>
 
-            <span className="breadcrumbSeparator">
-              {' > '}
+
+              <span className="breadcrumbSeparator">
+                {' > '}
+              </span>
+
+
+              <Link to={path}>
+                {getPageName(part)}
+              </Link>
+
+
             </span>
+          );
 
-
-            <Link to={path}>
-              {part}
-            </Link>
-
-          </span>
-        );
-
-      })}
+        }
+      )}
 
 
     </div>
   );
+
 }
 
 

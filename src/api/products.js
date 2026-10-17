@@ -1,5 +1,5 @@
 // apiClient is our central function
-// for all API requests.
+// for communicating with DummyJSON.
 import { apiClient } from './client.js';
 
 
@@ -14,23 +14,28 @@ export const products = {
   // GET ALL PRODUCTS
   // ==================================================
 
-  async getAll() {
+  async getAll(options = {}) {
 
     return apiClient(
-      '/products?limit=0'
+      '/products?limit=0',
+      options
     );
 
   },
 
 
   // ==================================================
-  // GET PRODUCT BY ID
+  // GET ONE PRODUCT BY ID
   // ==================================================
 
-  async getById(id) {
+  async getById(
+    id,
+    options = {}
+  ) {
 
     return apiClient(
-      `/products/${id}`
+      `/products/${id}`,
+      options
     );
 
   },
@@ -45,17 +50,13 @@ export const products = {
     options = {}
   ) {
 
-    // Make the search text safe for the URL.
+    // Make search text safe for a URL.
     const safeQuery =
       encodeURIComponent(query);
 
 
     return apiClient(
       `/products/search?q=${safeQuery}&limit=0`,
-
-      // This lets us send things like:
-      //
-      // signal: controller.signal
       options
     );
 
@@ -63,13 +64,14 @@ export const products = {
 
 
   // ==================================================
-  // GET CATEGORIES
+  // GET PRODUCT CATEGORIES
   // ==================================================
 
-  async getCategories() {
+  async getCategories(options = {}) {
 
     return apiClient(
-      '/products/categories'
+      '/products/categories',
+      options
     );
 
   }

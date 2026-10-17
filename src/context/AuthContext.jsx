@@ -1,5 +1,5 @@
-// createContext creates the shared auth context.
-// useContext lets components use auth.
+// createContext creates our Auth Context.
+// useContext lets components read the Auth Context.
 import {
   createContext,
   useContext
@@ -11,10 +11,15 @@ import useLocalStorage from '../hooks/useLocalStorage.jsx';
 
 
 // ==================================================
-// 1. CREATE AUTH CONTEXT
+// 1. CREATE THE AUTH CONTEXT
 // ==================================================
 
-const AuthContext = createContext();
+// null is the fallback value.
+//
+// If a component tries to use AuthContext
+// outside AuthProvider,
+// the value will be null.
+const AuthContext = createContext(null);
 
 
 // ==================================================
@@ -23,11 +28,14 @@ const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
 
-  // Instead of useState,
-  // we now use useLocalStorage.
+  // ==================================================
+  // USER STATE
+  // ==================================================
+
+  // Read the saved user from localStorage.
   //
-  // "user" = key in localStorage
-  // null = default value when nobody is logged in
+  // If there is no saved user,
+  // start with null.
   const [user, setUser] =
     useLocalStorage('user', null);
 
@@ -38,18 +46,13 @@ export function AuthProvider({ children }) {
 
   function login() {
 
-    // For now this is a fake user.
-    // Later this could come from a real API.
-    const loggedInUser = {
-      name: 'User'
-    };
-
-
-    // Save the user.
+    // Fake login for now.
     //
-    // Because setUser comes from useLocalStorage,
-    // this also saves the user in localStorage.
-    setUser(loggedInUser);
+    // Later this could come
+    // from a real backend.
+    setUser({
+      name: 'User'
+    });
 
   }
 
@@ -60,19 +63,22 @@ export function AuthProvider({ children }) {
 
   function logout() {
 
-    // null means:
-    // nobody is logged in.
+    // Remove the logged-in user.
     setUser(null);
 
   }
 
 
   // ==================================================
-  // PROVIDER
+  // 3. PROVIDE AUTH DATA
   // ==================================================
 
+  // React 19 syntax:
+  //
+  // We use <AuthContext>
+  // directly as the Provider.
   return (
-    <AuthContext.Provider
+    <AuthContext
       value={{
         user,
         login,
@@ -82,21 +88,25 @@ export function AuthProvider({ children }) {
 
       {children}
 
-    </AuthContext.Provider>
+    </AuthContext>
   );
 }
 
 
 // ==================================================
-// 3. CUSTOM HOOK
+// 4. CUSTOM AUTH HOOK
 // ==================================================
 
 export function useAuth() {
 
-  const context = useContext(AuthContext);
+  // Read the nearest AuthContext value.
+  const context =
+    useContext(AuthContext);
 
 
-  if (!context) {
+  // If AuthProvider is missing,
+  // show a clear error.
+  if (context === null) {
 
     throw new Error(
       'useAuth must be used within an AuthProvider'
@@ -105,5 +115,10 @@ export function useAuth() {
   }
 
 
+  // Return:
+  //
+  // user
+  // login
+  // logout
   return context;
 }

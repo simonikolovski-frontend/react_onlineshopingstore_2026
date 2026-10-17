@@ -1,6 +1,6 @@
-// createContext creates the shared theme context.
-// useContext lets components use the theme.
-// useEffect applies the theme class to <body>.
+// createContext creates our Theme Context.
+// useContext lets components read the Context.
+// useEffect applies the selected theme to <body>.
 import {
   createContext,
   useContext,
@@ -13,10 +13,14 @@ import useLocalStorage from '../hooks/useLocalStorage.jsx';
 
 
 // ==================================================
-// 1. CREATE CONTEXT
+// 1. CREATE THE CONTEXT
 // ==================================================
 
-const ThemeContext = createContext();
+// null is the fallback value.
+//
+// If a component tries to use ThemeContext
+// outside ThemeProvider, the value will be null.
+const ThemeContext = createContext(null);
 
 
 // ==================================================
@@ -25,11 +29,14 @@ const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
 
-  // Instead of useState,
-  // we now use useLocalStorage.
+  // ==================================================
+  // THEME STATE
+  // ==================================================
+
+  // Read the saved theme from localStorage.
   //
-  // "theme" is the key in localStorage.
-  // "dark" is the default value.
+  // If there is no saved theme,
+  // start with "dark".
   const [theme, setTheme] =
     useLocalStorage('theme', 'dark');
 
@@ -59,14 +66,14 @@ export function ThemeProvider({ children }) {
 
   useEffect(() => {
 
-    // Remove old theme classes.
+    // Remove the old theme classes.
     document.body.classList.remove(
       'darkTheme',
       'lightTheme'
     );
 
 
-    // Add the current theme.
+    // Add the current theme class.
     if (theme === 'dark') {
 
       document.body.classList.add(
@@ -85,11 +92,15 @@ export function ThemeProvider({ children }) {
 
 
   // ==================================================
-  // PROVIDER
+  // 3. PROVIDE THE CONTEXT
   // ==================================================
 
+  // React 19 syntax:
+  //
+  // We can use <ThemeContext>
+  // directly as the Provider.
   return (
-    <ThemeContext.Provider
+    <ThemeContext
       value={{
         theme,
         toggleTheme
@@ -98,24 +109,29 @@ export function ThemeProvider({ children }) {
 
       {children}
 
-    </ThemeContext.Provider>
+    </ThemeContext>
   );
 }
 
 
 // ==================================================
-// 3. CUSTOM HOOK
+// 4. CUSTOM HOOK
 // ==================================================
 
 export function useTheme() {
 
-  const context = useContext(ThemeContext);
+  const context =
+    useContext(ThemeContext);
 
 
-  if (!context) {
+  // If ThemeProvider is missing,
+  // show a clear error.
+  if (context === null) {
+
     throw new Error(
       'useTheme must be used within a ThemeProvider'
     );
+
   }
 
 
