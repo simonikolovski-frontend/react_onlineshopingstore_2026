@@ -35,6 +35,14 @@ import {
 
 
 // ==================================================
+// REUSABLE PRODUCT LIST ITEM
+// ==================================================
+
+import ProductListItem
+  from '../components/ProductListItem.jsx';
+
+
+// ==================================================
 // FAVORITES PAGE
 // ==================================================
 
@@ -42,7 +50,7 @@ function Favorites() {
 
 
   // ==================================================
-  // 1. FAVORITES CONTEXT
+  // FAVORITES
   // ==================================================
 
   const {
@@ -52,7 +60,7 @@ function Favorites() {
 
 
   // ==================================================
-  // 2. AUTH CONTEXT
+  // AUTH
   // ==================================================
 
   const {
@@ -61,7 +69,7 @@ function Favorites() {
 
 
   // ==================================================
-  // 3. LANGUAGE CONTEXT
+  // LANGUAGE
   // ==================================================
 
   const {
@@ -70,13 +78,8 @@ function Favorites() {
 
 
   // ==================================================
-  // 4. PROTECT FAVORITES PAGE
+  // PROTECT PAGE
   // ==================================================
-
-  // If there is NO logged-in user,
-  // do not show the Favorites page.
-  //
-  // Redirect the visitor back to Home.
 
   if (!user) {
 
@@ -91,12 +94,8 @@ function Favorites() {
 
 
   // ==================================================
-  // 5. EMPTY FAVORITES
+  // EMPTY FAVORITES
   // ==================================================
-
-  // If user is logged in,
-  // but there are no favorite products,
-  // show an empty message.
 
   if (favorites.length === 0) {
 
@@ -125,17 +124,13 @@ function Favorites() {
 
 
   // ==================================================
-  // 6. FAVORITES LIST
+  // FAVORITES
   // ==================================================
 
   return (
 
     <main className="cartPage">
 
-
-      {/* ==========================================
-          TITLE
-          ========================================== */}
 
       <h1>
 
@@ -144,73 +139,27 @@ function Favorites() {
       </h1>
 
 
-      {/* ==========================================
-          FAVORITES LIST
-          ========================================== */}
-
       <div className="cartItems">
 
 
         {favorites.map(
           product => (
 
-            <div
-              className="cartItem"
+            <ProductListItem
+
               key={product.id}
-            >
 
+              product={product}
 
-              {/* ==================================
-                  PRODUCT IMAGE
-                  ================================== */}
+              onRemove={
+                removeFavorite
+              }
 
-              <img
-                src={product.thumbnail}
-                alt={product.title}
-              />
+              removeText={
+                t('remove')
+              }
 
-
-              {/* ==================================
-                  PRODUCT INFORMATION
-                  ================================== */}
-
-              <div className="cartItemInfo">
-
-
-                <h3>
-
-                  {product.title}
-
-                </h3>
-
-
-                <p>
-
-                  ${product.price}
-
-                </p>
-
-
-              </div>
-
-
-              {/* ==================================
-                  REMOVE FAVORITE
-                  ================================== */}
-
-              <button
-                className="removeCartButton"
-                onClick={() =>
-                  removeFavorite(product)
-                }
-              >
-
-                {t('remove')}
-
-              </button>
-
-
-            </div>
+            />
 
           )
         )}

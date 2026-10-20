@@ -2,11 +2,6 @@
 // CART CONTEXT
 // ==================================================
 
-// useCart gives us:
-//
-// items
-// removeItem()
-// clearCart()
 import {
   useCart
 } from '../context/CartContext.jsx';
@@ -16,23 +11,28 @@ import {
 // LANGUAGE CONTEXT
 // ==================================================
 
-// useLanguage gives us t()
-//
-// t() returns the correct translation.
 import {
   useLanguage
 } from '../context/LanguageContext.jsx';
 
 
 // ==================================================
-// CART COMPONENT
+// REUSABLE PRODUCT LIST ITEM
+// ==================================================
+
+import ProductListItem
+  from '../components/ProductListItem.jsx';
+
+
+// ==================================================
+// CART PAGE
 // ==================================================
 
 function Cart() {
 
 
   // ==================================================
-  // 1. CART CONTEXT
+  // CART
   // ==================================================
 
   const {
@@ -43,7 +43,7 @@ function Cart() {
 
 
   // ==================================================
-  // 2. LANGUAGE CONTEXT
+  // LANGUAGE
   // ==================================================
 
   const {
@@ -52,23 +52,16 @@ function Cart() {
 
 
   // ==================================================
-  // 3. CALCULATE TOTAL PRICE
+  // TOTAL PRICE
   // ==================================================
-
-  // reduce() goes through every item
-  // and adds its price.
-  //
-  // Example:
-  //
-  // $10 + $20 + $5
-  //
-  // totalPrice = 35
 
   const totalPrice =
     items.reduce(
       (total, item) => {
 
-        return total + item.price;
+        return (
+          total + item.price
+        );
 
       },
       0
@@ -76,54 +69,43 @@ function Cart() {
 
 
   // ==================================================
-  // 4. EMPTY CART
+  // EMPTY CART
   // ==================================================
-
-  // If there are no items,
-  // show the empty cart message.
 
   if (items.length === 0) {
 
     return (
-      <main className="cartPage">
 
+      <main className="cartPage">
 
         <h1>
           {t('cartTitle')}
         </h1>
 
-
         <p className="emptyCart">
           {t('emptyCart')}
         </p>
 
-
       </main>
+
     );
 
   }
 
 
   // ==================================================
-  // 5. CART PAGE
+  // CART
   // ==================================================
 
   return (
+
     <main className="cartPage">
 
-
-      {/* ==========================================
-          CART TITLE
-          ========================================== */}
 
       <h1>
         {t('cartTitle')}
       </h1>
 
-
-      {/* ==========================================
-          CART ITEMS
-          ========================================== */}
 
       <div className="cartItems">
 
@@ -131,61 +113,19 @@ function Cart() {
         {items.map(
           (item, index) => (
 
-            <div
-              className="cartItem"
+            <ProductListItem
+
               key={`${item.id}-${index}`}
-            >
 
+              product={item}
 
-              {/* ==================================
-                  PRODUCT IMAGE
-                  ================================== */}
+              onRemove={removeItem}
 
-              <img
-                src={item.thumbnail}
-                alt={item.title}
-              />
+              removeText={
+                t('remove')
+              }
 
-
-              {/* ==================================
-                  PRODUCT INFORMATION
-                  ================================== */}
-
-              <div className="cartItemInfo">
-
-
-                {/* PRODUCT TITLE */}
-
-                <h3>
-                  {item.title}
-                </h3>
-
-
-                {/* PRODUCT PRICE */}
-
-                <p>
-                  ${item.price}
-                </p>
-
-
-              </div>
-
-
-              {/* ==================================
-                  REMOVE BUTTON
-                  ================================== */}
-
-              <button
-                className="removeCartButton"
-                onClick={() =>
-                  removeItem(item)
-                }
-              >
-                {t('remove')}
-              </button>
-
-
-            </div>
+            />
 
           )
         )}
@@ -201,8 +141,6 @@ function Cart() {
       <div className="cartSummary">
 
 
-        {/* TOTAL PRICE */}
-
         <h2>
 
           {t('total')}:
@@ -212,13 +150,13 @@ function Cart() {
         </h2>
 
 
-        {/* CLEAR CART */}
-
         <button
           className="clearCartButton"
           onClick={clearCart}
         >
+
           {t('clearCart')}
+
         </button>
 
 
@@ -226,6 +164,7 @@ function Cart() {
 
 
     </main>
+
   );
 
 }
