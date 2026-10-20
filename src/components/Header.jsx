@@ -9,20 +9,44 @@ import {
 
 
 // ==================================================
-// CONTEXTS
+// CART CONTEXT
 // ==================================================
 
 import {
   useCart
 } from '../context/CartContext.jsx';
 
+
+// ==================================================
+// FAVORITES CONTEXT
+// ==================================================
+
+import {
+  useFavorites
+} from '../context/FavoritesContext.jsx';
+
+
+// ==================================================
+// THEME CONTEXT
+// ==================================================
+
 import {
   useTheme
 } from '../context/ThemeContext.jsx';
 
+
+// ==================================================
+// AUTH CONTEXT
+// ==================================================
+
 import {
   useAuth
 } from '../context/AuthContext.jsx';
+
+
+// ==================================================
+// LANGUAGE CONTEXT
+// ==================================================
 
 import {
   useLanguage
@@ -35,6 +59,7 @@ import {
 
 function Header() {
 
+
   // ==================================================
   // NAVIGATION
   // ==================================================
@@ -44,7 +69,7 @@ function Header() {
 
 
   // ==================================================
-  // CART CONTEXT
+  // CART
   // ==================================================
 
   const {
@@ -54,7 +79,16 @@ function Header() {
 
 
   // ==================================================
-  // THEME CONTEXT
+  // FAVORITES
+  // ==================================================
+
+  const {
+    favorites
+  } = useFavorites();
+
+
+  // ==================================================
+  // THEME
   // ==================================================
 
   const {
@@ -64,7 +98,7 @@ function Header() {
 
 
   // ==================================================
-  // AUTH CONTEXT
+  // AUTH
   // ==================================================
 
   const {
@@ -75,7 +109,7 @@ function Header() {
 
 
   // ==================================================
-  // LANGUAGE CONTEXT
+  // LANGUAGE
   // ==================================================
 
   const {
@@ -86,30 +120,51 @@ function Header() {
 
 
   // ==================================================
-  // LOGOUT
+  // FAVORITES COUNT
+  // ==================================================
+
+  // If user is logged in:
+  // show the real number of favorites.
+  //
+  // If user is logged out:
+  // show 0.
+
+  const favoritesCount =
+    user
+      ? favorites.length
+      : 0;
+
+
+  // ==================================================
+  // LOGOUT FUNCTION
   // ==================================================
 
   function handleLogout() {
 
-    // Clear cart.
+
+    // Empty the shopping cart.
+
     clearCart();
 
 
     // Logout user.
+
     logout();
 
 
-    // Go back to Home.
+    // Return to home page.
+
     navigate('/');
 
   }
 
 
   // ==================================================
-  // HEADER
+  // HEADER UI
   // ==================================================
 
   return (
+
     <header className="header">
 
 
@@ -118,12 +173,14 @@ function Header() {
           ========================================== */}
 
       <div className="logo">
+
         Ecommerce
+
       </div>
 
 
       {/* ==========================================
-          NAVIGATION
+          MAIN NAVIGATION
           ========================================== */}
 
       <nav className="nav">
@@ -140,7 +197,9 @@ function Header() {
               : ''
           }
         >
+
           {t('home')}
+
         </NavLink>
 
 
@@ -154,7 +213,9 @@ function Header() {
               : ''
           }
         >
+
           {t('about')}
+
         </NavLink>
 
 
@@ -175,9 +236,11 @@ function Header() {
         <button
           onClick={toggleTheme}
         >
+
           {theme === 'dark'
             ? '☀ Light'
             : '🌙 Dark'}
+
         </button>
 
 
@@ -188,12 +251,14 @@ function Header() {
         <button
           onClick={changeLanguage}
         >
+
           {language}
+
         </button>
 
 
         {/* ========================================
-            AUTH BUTTONS
+            AUTHENTICATION
             ======================================== */}
 
         {user ? (
@@ -215,7 +280,9 @@ function Header() {
             <button
               onClick={handleLogout}
             >
+
               {t('logout')}
+
             </button>
 
 
@@ -231,20 +298,40 @@ function Header() {
             <button
               onClick={login}
             >
+
               {t('login')}
+
             </button>
 
 
             {/* REGISTER */}
 
             <button>
+
               {t('register')}
+
             </button>
 
 
           </>
 
         )}
+
+
+        {/* ========================================
+            FAVORITES
+            ======================================== */}
+
+        <NavLink
+          to="/favorites"
+          className="headerCartButton"
+        >
+
+          ♥ {t('favoritesTitle')}
+          {' '}
+          ({favoritesCount})
+
+        </NavLink>
 
 
         {/* ========================================
@@ -255,7 +342,11 @@ function Header() {
           to="/cart"
           className="headerCartButton"
         >
-          {t('cart')} ({items.length})
+
+          {t('cart')}
+          {' '}
+          ({items.length})
+
         </NavLink>
 
 
@@ -263,6 +354,7 @@ function Header() {
 
 
     </header>
+
   );
 
 }

@@ -2,16 +2,22 @@
 // REACT
 // ==================================================
 
-import { StrictMode } from 'react';
+import {
+  StrictMode
+} from 'react';
 
-import { createRoot } from 'react-dom/client';
+import {
+  createRoot
+} from 'react-dom/client';
 
 
 // ==================================================
 // REACT ROUTER
 // ==================================================
 
-import { BrowserRouter } from 'react-router-dom';
+import {
+  BrowserRouter
+} from 'react-router-dom';
 
 
 // ==================================================
@@ -41,6 +47,10 @@ import {
 } from './context/CartContext.jsx';
 
 import {
+  FavoritesProvider
+} from './context/FavoritesContext.jsx';
+
+import {
   LanguageProvider
 } from './context/LanguageContext.jsx';
 
@@ -51,38 +61,75 @@ import {
 
 import App from './App.jsx';
 
+
+// ==================================================
+// GLOBAL CSS
+// ==================================================
+
 import './index.css';
 
 
 // ==================================================
-// TANSTACK QUERY CLIENT
+// 1. CREATE QUERY CLIENT
 // ==================================================
 
-const queryClient = new QueryClient({
+// QueryClient controls how
+// TanStack Query behaves
+// in the whole application.
 
-  defaultOptions: {
+const queryClient =
+  new QueryClient({
 
-    queries: {
+    defaultOptions: {
 
-      // Data stays fresh for 2 minutes.
-      staleTime: 2 * 60 * 1000,
+      queries: {
 
-      // Retry failed requests 2 times.
-      retry: 2,
 
-      // Do not refetch when browser
-      // window gets focus.
-      refetchOnWindowFocus: false
+        // ------------------------------------------
+        // STALE TIME
+        // ------------------------------------------
+
+        // Data is considered fresh
+        // for 2 minutes.
+        //
+        // 2 minutes
+        // =
+        // 2 * 60 * 1000 milliseconds
+
+        staleTime:
+          2 * 60 * 1000,
+
+
+        // ------------------------------------------
+        // RETRY
+        // ------------------------------------------
+
+        // If an API request fails,
+        // TanStack Query tries again
+        // up to 2 times.
+
+        retry: 2,
+
+
+        // ------------------------------------------
+        // WINDOW FOCUS
+        // ------------------------------------------
+
+        // Do not automatically make
+        // another API request every time
+        // we return to the browser tab.
+
+        refetchOnWindowFocus: false
+
+      }
 
     }
 
-  }
-
-});
+  });
 
 
 // ==================================================
-// RENDER APPLICATION
+// 2. RENDER APPLICATION
 // ==================================================
 
 createRoot(
@@ -91,31 +138,85 @@ createRoot(
 
   <StrictMode>
 
-    <QueryClientProvider client={queryClient}>
+
+    {/* ============================================
+        TANSTACK QUERY
+        ============================================ */}
+
+    <QueryClientProvider
+      client={queryClient}
+    >
+
+
+      {/* ==========================================
+          THEME CONTEXT
+          ========================================== */}
 
       <ThemeProvider>
 
+
+        {/* ========================================
+            AUTH CONTEXT
+            ======================================== */}
+
         <AuthProvider>
+
+
+          {/* ======================================
+              CART CONTEXT
+              ====================================== */}
 
           <CartProvider>
 
-            <LanguageProvider>
 
-              <BrowserRouter>
+            {/* ====================================
+                FAVORITES CONTEXT
+                ==================================== */}
 
-                <App />
+            <FavoritesProvider>
 
-              </BrowserRouter>
 
-            </LanguageProvider>
+              {/* ==================================
+                  LANGUAGE CONTEXT
+                  ================================== */}
+
+              <LanguageProvider>
+
+
+                {/* ================================
+                    REACT ROUTER
+                    ================================ */}
+
+                <BrowserRouter>
+
+
+                  {/* ==============================
+                      APPLICATION
+                      ============================== */}
+
+                  <App />
+
+
+                </BrowserRouter>
+
+
+              </LanguageProvider>
+
+
+            </FavoritesProvider>
+
 
           </CartProvider>
 
+
         </AuthProvider>
+
 
       </ThemeProvider>
 
+
     </QueryClientProvider>
+
 
   </StrictMode>
 

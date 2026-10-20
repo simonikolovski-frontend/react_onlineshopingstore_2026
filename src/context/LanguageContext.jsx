@@ -63,6 +63,22 @@ const translations = {
     total: 'Total',
 
 
+    // FAVORITES PAGE
+    favoritesTitle: 'Favorites',
+
+    noFavorites:
+      'You have no favorite products yet.',
+
+    addToFavorites:
+      'Add to favorites',
+
+    removeFromFavorites:
+      'Remove from favorites',
+
+    favoriteLoginMessage:
+      'Please login first to add products to your favorites.',
+
+
     // PRODUCT DETAILS
     back: 'Back',
     brand: 'Brand',
@@ -127,6 +143,22 @@ const translations = {
     total: 'Вкупно',
 
 
+    // FAVORITES PAGE
+    favoritesTitle: 'Омилени',
+
+    noFavorites:
+      'Сè уште немате омилени производи.',
+
+    addToFavorites:
+      'Додај во омилени',
+
+    removeFromFavorites:
+      'Отстрани од омилени',
+
+    favoriteLoginMessage:
+      'Најавете се за да додадете производ во омилени.',
+
+
     // PRODUCT DETAILS
     back: 'Назад',
     brand: 'Бренд',
@@ -174,17 +206,11 @@ export function LanguageProvider({
   // LANGUAGE + LOCAL STORAGE
   // ==================================================
 
-  // Before we had:
+  // "language"
+  // → localStorage key
   //
-  // useState('English')
-  //
-  // Now we use:
-  //
-  // useLocalStorage('language', 'English')
-  //
-  // "language" is the localStorage key.
-  //
-  // "English" is the default value.
+  // "English"
+  // → default language
 
   const [
     language,
@@ -201,20 +227,22 @@ export function LanguageProvider({
 
   function changeLanguage() {
 
-    setLanguage(previousLanguage => {
+    setLanguage(
+      previousLanguage => {
 
-      if (
-        previousLanguage === 'English'
-      ) {
+        if (
+          previousLanguage === 'English'
+        ) {
 
-        return 'Macedonian';
+          return 'Macedonian';
+
+        }
+
+
+        return 'English';
 
       }
-
-
-      return 'English';
-
-    });
+    );
 
   }
 
@@ -222,6 +250,16 @@ export function LanguageProvider({
   // ==================================================
   // 5. TRANSLATE FUNCTION
   // ==================================================
+
+  // Example:
+  //
+  // t('home')
+  //
+  // English:
+  // Home
+  //
+  // Macedonian:
+  // Почетна
 
   function t(key) {
 
@@ -238,6 +276,7 @@ export function LanguageProvider({
   // ==================================================
 
   return (
+
     <LanguageContext
       value={{
         language,
@@ -249,6 +288,7 @@ export function LanguageProvider({
       {children}
 
     </LanguageContext>
+
   );
 
 }

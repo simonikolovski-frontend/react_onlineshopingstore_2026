@@ -1,118 +1,136 @@
-// Routes holds all routes in our application.
-// Route defines one route.
+// ==================================================
+// REACT ROUTER
+// ==================================================
+
 import {
   Routes,
   Route
 } from 'react-router-dom';
 
 
-// Shared layout.
-import Layout from './layouts/Layout.jsx';
+// ==================================================
+// LAYOUT
+// ==================================================
+
+import Layout
+  from './layouts/Layout.jsx';
 
 
-// Pages.
-import Home from './pages/Home.jsx';
-import About from './pages/About.jsx';
-import ProductDetails from './pages/ProductDetails.jsx';
-import Cart from './pages/Cart.jsx';
-import NotFound from './pages/NotFound.jsx';
+// ==================================================
+// PAGES
+// ==================================================
+
+import Home
+  from './pages/Home.jsx';
+
+import About
+  from './pages/About.jsx';
+
+import Cart
+  from './pages/Cart.jsx';
+
+import ProductDetails
+  from './pages/ProductDetails.jsx';
+
+import Favorites
+  from './pages/Favorites.jsx';
+
+import NotFound
+  from './pages/NotFound.jsx';
 
 
-import './App.css';
-
+// ==================================================
+// APP COMPONENT
+// ==================================================
 
 function App() {
 
   return (
+
     <Routes>
 
-      {/* ==========================================
-          SHARED LAYOUT
 
-          All routes inside this Route use:
-          Header
-          Breadcrumb
-          Outlet
+      {/* ==========================================
+          MAIN LAYOUT
           ========================================== */}
+
       <Route
         path="/"
         element={<Layout />}
       >
 
 
-        {/* HOME
-            URL: /
-        */}
+        {/* HOME */}
+
         <Route
           index
           element={<Home />}
         />
 
 
-        {/* PRODUCTS
-            URL: /products
-        */}
+        {/* PRODUCTS */}
+
         <Route
           path="products"
           element={<Home />}
         />
 
 
-        {/* SEARCH
-            Example:
-            /search?q=phone
-        */}
+        {/* SEARCH */}
+
         <Route
           path="search"
           element={<Home />}
         />
 
 
-        {/* ABOUT
-            URL: /about
-        */}
+        {/* ABOUT */}
+
         <Route
           path="about"
           element={<About />}
         />
 
 
-        {/* PRODUCT DETAILS
-            Example:
-            /products/12
-        */}
+        {/* PRODUCT DETAILS */}
+
         <Route
           path="products/:id"
           element={<ProductDetails />}
         />
 
 
-        {/* ==========================================
-            CART
+        {/* CART */}
 
-            URL:
-            /cart
-            ========================================== */}
         <Route
           path="cart"
           element={<Cart />}
         />
 
 
-        {/* ==========================================
-            404
+        {/* FAVORITES */}
 
-            Any route that does not exist.
-            ========================================== */}
+        <Route
+          path="favorites"
+          element={<Favorites />}
+        />
+
+
+        {/* 404 */}
+
         <Route
           path="*"
           element={<NotFound />}
         />
 
+
       </Route>
 
+
     </Routes>
+
   );
+
 }
 
 

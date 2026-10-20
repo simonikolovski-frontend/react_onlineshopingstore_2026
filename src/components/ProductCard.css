@@ -1,6 +1,13 @@
-/* ---------------- PRODUCT CARD ---------------- */
+/* ==================================================
+   PRODUCT CARD
+   ================================================== */
 
-.card {
+.productCard {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
   overflow: hidden;
 
   background-color: #1a1d21;
@@ -15,129 +22,306 @@
 }
 
 
-/* Small hover animation */
-.card:hover {
-  transform: translateY(-5px);
+/* ==================================================
+   PRODUCT CARD HOVER
+   ================================================== */
 
-  border-color: #454c54;
+.productCard:hover {
+  transform: translateY(-4px);
 
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+  border-color: #3d434a;
+
+  box-shadow:
+    0 8px 24px
+    rgba(255, 255, 255, 0.15);
 }
 
 
-/* Product image */
-.cardImage {
+/* ==================================================
+   PRODUCT IMAGE AREA
+   ================================================== */
+
+.productImage {
+  position: relative;
+
   width: 100%;
-  height: 240px;
+  height: 220px;
 
-  object-fit: contain;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
-  padding: 20px;
+  overflow: hidden;
 
   background-color: #f3f3f3;
 }
 
 
-/* Bottom part of card */
-.cardContent {
+/* ==================================================
+   PRODUCT IMAGE
+   ================================================== */
+
+.productImage img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+
+  padding: 15px;
+}
+
+
+/* ==================================================
+   FAVORITE BUTTON
+   ================================================== */
+
+.favoriteButton {
+  position: absolute;
+
+  top: 10px;
+  right: 10px;
+
+  width: 38px;
+  height: 38px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 0;
+
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.9
+  );
+
+  color: #d14b5a;
+
+  border: 1px solid #dddddd;
+
+  border-radius: 50%;
+
+  font-size: 25px;
+
+  line-height: 1;
+
+  cursor: pointer;
+
+  z-index: 2;
+
+  transition:
+    transform 0.2s,
+    background-color 0.2s;
+}
+
+
+/* ==================================================
+   FAVORITE BUTTON HOVER
+   ================================================== */
+
+.favoriteButton:hover {
+  transform: scale(1.1);
+
+  background-color: #ffffff;
+}
+
+
+/* ==================================================
+   PRODUCT INFO
+   ================================================== */
+
+.productInfo {
+  flex: 1;
+
+  display: flex;
+  flex-direction: column;
+
   padding: 18px;
 }
 
 
-/* Product title */
-.cardTitle {
-  min-height: 45px;
+/* ==================================================
+   PRODUCT CATEGORY
+   ================================================== */
 
+.productCategory {
+  width: fit-content;
+
+  margin-bottom: 10px;
+
+  padding: 5px 9px;
+
+  background-color:
+    rgba(214, 168, 95, 0.12);
+
+  color: #d6a85f;
+
+  border:
+    1px solid
+    rgba(214, 168, 95, 0.5);
+
+  border-radius: 999px;
+
+  font-size: 11px;
+
+  text-transform: capitalize;
+}
+
+
+/* ==================================================
+   PRODUCT TITLE
+   ================================================== */
+
+.productTitle {
   margin: 0 0 12px;
 
   color: #f2f2f2;
 
   font-size: 17px;
-  line-height: 1.4;
+
+  line-height: 1.3;
 }
 
 
-/* Product price */
-.cardPrice {
-  margin: 10px 0;
+/* ==================================================
+   PRODUCT RATING
+   ================================================== */
+
+.productRating {
+  margin: 0 0 10px;
+
+  color: #d9dde1;
+
+  font-size: 14px;
+}
+
+
+/* ==================================================
+   PRODUCT PRICE
+   ================================================== */
+
+.productPrice {
+  margin: 0 0 18px;
 
   color: #d6a85f;
 
-  font-size: 19px;
+  font-size: 22px;
+
   font-weight: bold;
 }
 
 
-/* View Details button */
-.card button {
+/* ==================================================
+   VIEW DETAILS BUTTON
+   ================================================== */
+
+.viewButton {
   width: 100%;
 
-  margin-top: 8px;
+  margin-top: auto;
 
   padding: 10px 14px;
 
-  background-color: transparent;
-  color: #d6a85f;
-
-  border: 1px solid #d6a85f;
-  border-radius: 8px;
-
-  cursor: pointer;
-
-  font-weight: bold;
-
-  transition: 0.2s;
-}
-
-
-.card button:hover {
   background-color: #d6a85f;
+
   color: #111315;
-}
 
-.detailsLink {
-  display: block;
-
-  width: 100%;
-
-  margin-top: 8px;
-  padding: 10px 14px;
-
-  background-color: transparent;
-  color: #d6a85f;
-
-  border: 1px solid #d6a85f;
   border-radius: 8px;
 
   text-align: center;
+
   text-decoration: none;
+
+  font-size: 14px;
 
   font-weight: bold;
 
-  transition: 0.2s;
+  transition:
+    background-color 0.2s,
+    transform 0.2s;
 }
 
-
-.detailsLink:hover {
-  background-color: #d6a85f;
-  color: #111315;
-}
 
 /* ==================================================
-   DARK THEME - SHADOW ONLY ON HOVER
+   VIEW DETAILS BUTTON HOVER
    ================================================== */
 
-/* Normally there is NO light shadow */
-body.darkTheme .card {
-  box-shadow: none;
+.viewButton:hover {
+  background-color: #e3bd7f;
+
+  transform: translateY(-1px);
 }
 
 
-/* Light shadow appears only when we hover */
-body.darkTheme .card:hover {
+/* ==================================================
+   LIGHT THEME
+   ================================================== */
+
+body.lightTheme .productCard {
+  background-color: #ffffff;
+
+  border-color: #dddddd;
+}
+
+
+/* Card hover in light theme */
+
+body.lightTheme .productCard:hover {
+  border-color: #cccccc;
+
   box-shadow:
-    0 -10px 25px rgba(255, 255, 255, 0.14),
-    0 10px 25px rgba(255, 255, 255, 0.14),
-    -8px 0 20px rgba(255, 255, 255, 0.10),
-    8px 0 20px rgba(255, 255, 255, 0.10);
+    0 8px 24px
+    rgba(0, 0, 0, 0.12);
+}
+
+
+/* Product title */
+
+body.lightTheme .productTitle {
+  color: #222222;
+}
+
+
+/* Rating */
+
+body.lightTheme .productRating {
+  color: #555555;
+}
+
+
+/* ==================================================
+   RESPONSIVE
+   ================================================== */
+
+@media (max-width: 600px) {
+
+  .productImage {
+    height: 200px;
+  }
+
+
+  .productInfo {
+    padding: 15px;
+  }
+
+
+  .productTitle {
+    font-size: 16px;
+  }
+
+
+  .productPrice {
+    font-size: 20px;
+  }
+
+
+  .favoriteButton {
+    width: 36px;
+    height: 36px;
+
+    font-size: 23px;
+  }
+
 }
