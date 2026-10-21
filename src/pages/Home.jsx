@@ -3,8 +3,8 @@
 // ==================================================
 
 import {
-  useState,
-  useEffect
+  useEffect,
+  useState
 } from 'react';
 
 
@@ -13,8 +13,8 @@ import {
 // ==================================================
 
 import {
-  useSearchParams,
-  useNavigate
+  useNavigate,
+  useSearchParams
 } from 'react-router-dom';
 
 
@@ -45,7 +45,7 @@ import ProductCard
 
 
 // ==================================================
-// LANGUAGE CONTEXT
+// LANGUAGE
 // ==================================================
 
 import {
@@ -54,78 +54,83 @@ import {
 
 
 // ==================================================
-// STYLES
+// APP STYLES
 // ==================================================
 
 import '../App.css';
 
 
 // ==================================================
-// HOME COMPONENT
+// HOME PAGE
 // ==================================================
 
 function Home() {
 
 
   // ==================================================
-  // 1. LANGUAGE CONTEXT
+  // ROUTER
   // ==================================================
 
-  // We only need t()
-  // because t() gives us the correct translation.
-  const {
-    t
-  } = useLanguage();
+  const navigate =
+    useNavigate();
 
-
-  // ==================================================
-  // 2. CATEGORY STATE
-  // ==================================================
-
-  const [
-    category,
-    setCategory
-  ] = useState('');
-
-
-  // ==================================================
-  // 3. PAGINATION
-  // ==================================================
-
-  const [
-    page,
-    setPage
-  ] = useState(1);
-
-
-  const itemsPerPage = 20;
-
-
-  // ==================================================
-  // 4. SEARCH FROM URL
-  // ==================================================
 
   const [
     searchParams
   ] = useSearchParams();
 
 
-  const navigate =
-    useNavigate();
+  // ==================================================
+  // LANGUAGE
+  // ==================================================
+
+  const {
+    t
+  } = useLanguage();
 
 
-  // Example:
-  //
-  // /search?q=phone
-  //
-  // search = "phone"
+  // ==================================================
+  // SEARCH FROM URL
+  // ==================================================
+
+  /*
+    Example:
+
+    /search?q=phone
+
+    search becomes:
+
+    "phone"
+  */
+
   const search =
     searchParams.get('q') || '';
 
 
   // ==================================================
-  // 5. SEARCH INPUT
+  // RESET FROM LOGO
   // ==================================================
+
+  /*
+    Header sends:
+
+    /?reset=1
+
+    when we click the Ecommerce logo.
+  */
+
+  const resetFromLogo =
+    searchParams.get('reset');
+
+
+  // ==================================================
+  // LOCAL STATE
+  // ==================================================
+
+  /*
+    Search text written
+    inside the input.
+  */
 
   const [
     searchInput,
@@ -133,113 +138,216 @@ function Home() {
   ] = useState(search);
 
 
+  /*
+    Empty string means:
+
+    ALL categories.
+  */
+
+  const [
+    category,
+    setCategory
+  ] = useState('');
+
+
+  /*
+    Current pagination page.
+  */
+
+  const [
+    page,
+    setPage
+  ] = useState(1);
+
+
   // ==================================================
-  // 6. SEARCH DEBOUNCE
+  // PRODUCTS PER PAGE
   // ==================================================
+
+  const itemsPerPage =
+    20;
+
+
+  // ==================================================
+  // RESET FILTERS FROM LOGO
+  // ==================================================
+
+  /*
+    When Ecommerce logo is clicked:
+
+    1. clear search
+    2. category becomes All
+    3. page becomes 1
+    4. remove ?reset=1
+  */
 
   useEffect(() => {
 
-    const timer =
-      setTimeout(() => {
-
-        const term =
-          searchInput.trim();
-
-
-        // Every new search
-        // starts from page 1.
-        setPage(1);
+    if (
+      resetFromLogo !== '1'
+    ) {
+      return;
+    }
 
 
-        // ------------------------------------------
-        // EMPTY SEARCH
-        // ------------------------------------------
+    // Clear search.
 
-        if (term === '') {
-
-          if (search !== '') {
-
-            navigate(
-              '/',
-              {
-                replace: true
-              }
-            );
-
-          }
-
-          return;
-
-        }
+    setSearchInput('');
 
 
-        // ------------------------------------------
-        // SAME SEARCH
-        // ------------------------------------------
+    // Return category to All.
 
-        if (term === search) {
-
-          return;
-
-        }
+    setCategory('');
 
 
-        // ------------------------------------------
-        // CHANGE URL
-        // ------------------------------------------
+    // Return pagination to page 1.
 
-        navigate(
-          `/search?q=${encodeURIComponent(term)}`,
-          {
-            replace: true
-          }
-        );
-
-      }, 500);
+    setPage(1);
 
 
-    // Cancel the old timer
-    // if user types again.
-    return () => {
+    // Remove ?reset=1 from URL.
 
-      clearTimeout(timer);
-
-    };
+    navigate(
+      '/',
+      {
+        replace: true
+      }
+    );
 
   }, [
-    searchInput,
-    search,
+    resetFromLogo,
     navigate
   ]);
 
 
   // ==================================================
-  // 7. KEEP INPUT SYNCED WITH URL
+  // KEEP SEARCH INPUT IN SYNC WITH URL
   // ==================================================
+
+  /*
+    Example:
+
+    /search?q=laptop
+
+    search input becomes:
+
+    laptop
+  */
 
   useEffect(() => {
 
     setSearchInput(search);
 
-  }, [search]);
+  }, [
+    search
+  ]);
 
 
   // ==================================================
-  // 8. QUERY - ALL PRODUCTS
+  // SEARCH DEBOUNCE
   // ==================================================
+
+  /*
+    We wait 500ms after typing.
+
+    This prevents searching
+    after every single key press.
+  */
+
+  useEffect(() => {
+
+    const timeout =
+      setTimeout(() => {
+
+
+        const cleanSearch =
+          searchInput.trim();
+
+
+        // ==========================================
+        // SEARCH HAS TEXT
+        // ==========================================
+
+        if (cleanSearch) {
+
+          navigate(
+            `/search?q=${encodeURIComponent(
+              cleanSearch
+            )}`
+          );
+
+        }
+
+
+        // ==========================================
+        // SEARCH IS EMPTY
+        // ==========================================
+
+        else {
+
+          /*
+            Do not navigate while
+            reset=1 is being handled.
+
+            The reset effect above
+            will navigate to "/".
+          */
+
+          if (
+            resetFromLogo !== '1'
+          ) {
+
+            navigate('/');
+
+          }
+
+        }
+
+
+        // New search starts
+        // from page 1.
+
+        setPage(1);
+
+      }, 500);
+
+
+    // Cancel old timer
+    // if user types again.
+
+    return () =>
+      clearTimeout(timeout);
+
+  }, [
+    searchInput,
+    navigate,
+    resetFromLogo
+  ]);
+
+
+  // ==================================================
+  // ALL PRODUCTS QUERY
+  // ==================================================
+
+  /*
+    Load all products
+    when there is no search.
+  */
 
   const {
     data: allProductsData,
     isPending: allProductsPending,
-    error: allProductsError
+    isError: allProductsError,
+    error: allProductsErrorData
   } = useQuery({
 
     queryKey: [
       'products'
     ],
 
-
-    queryFn: ({ signal }) => {
+    queryFn: ({
+      signal
+    }) => {
 
       return products.getAll({
         signal
@@ -247,34 +355,37 @@ function Home() {
 
     },
 
-
-    // Only load all products
-    // when there is no search.
-    enabled: !search
+    enabled:
+      !search
 
   });
 
 
   // ==================================================
-  // 9. QUERY - SEARCH PRODUCTS
+  // SEARCH PRODUCTS QUERY
   // ==================================================
+
+  /*
+    This query runs only
+    when search has text.
+  */
 
   const {
     data: searchData,
     isPending: searchPending,
-    error: searchError
+    isError: searchError,
+    error: searchErrorData
   } = useQuery({
 
-    // Different search text
-    // creates a different cache.
     queryKey: [
       'products',
       'search',
       search
     ],
 
-
-    queryFn: ({ signal }) => {
+    queryFn: ({
+      signal
+    }) => {
 
       return products.search(
         search,
@@ -285,29 +396,27 @@ function Home() {
 
     },
 
-
-    // Run only if search exists.
-    enabled: Boolean(search)
+    enabled:
+      Boolean(search)
 
   });
 
 
   // ==================================================
-  // 10. QUERY - CATEGORIES
+  // CATEGORIES QUERY
   // ==================================================
 
   const {
-    data: categories = [],
-    isPending: categoriesPending,
-    error: categoriesError
+    data: categories = []
   } = useQuery({
 
     queryKey: [
       'productCategories'
     ],
 
-
-    queryFn: ({ signal }) => {
+    queryFn: ({
+      signal
+    }) => {
 
       return products.getCategories({
         signal
@@ -319,157 +428,92 @@ function Home() {
 
 
   // ==================================================
-  // 11. SEARCH INPUT CHANGE
+  // CHOOSE PRODUCT DATA
   // ==================================================
 
-  function handleSearchChange(event) {
+  /*
+    If user searches:
+    use search results.
 
-    setSearchInput(
-      event.target.value
-    );
+    Otherwise:
+    use all products.
+  */
 
-  }
-
-
-  // ==================================================
-  // 12. CATEGORY CHANGE
-  // ==================================================
-
-  function handleCategory(
-    newCategory
-  ) {
-
-    setCategory(
-      newCategory
-    );
-
-
-    setPage(1);
-
-  }
-
-
-  // ==================================================
-  // 13. CLEAR FILTERS
-  // ==================================================
-
-  function handleClearFilters() {
-
-    setSearchInput('');
-
-    setCategory('');
-
-    setPage(1);
-
-
-    navigate(
-      '/',
-      {
-        replace: true
-      }
-    );
-
-  }
-
-
-  // ==================================================
-  // 14. CHOOSE CORRECT PRODUCT DATA
-  // ==================================================
-
-  const productsData =
+  const productData =
     search
       ? searchData
       : allProductsData;
 
 
-  const productsPending =
+  // ==================================================
+  // LOADING STATE
+  // ==================================================
+
+  const isPending =
     search
       ? searchPending
       : allProductsPending;
 
 
-  const productsError =
+  // ==================================================
+  // ERROR STATE
+  // ==================================================
+
+  const isError =
     search
       ? searchError
       : allProductsError;
 
 
-  // ==================================================
-  // 15. LOADING
-  // ==================================================
-
-  if (
-    productsPending ||
-    categoriesPending
-  ) {
-
-    return (
-      <h2 className="loadingPage">
-        {t('loading')}
-      </h2>
-    );
-
-  }
+  const error =
+    search
+      ? searchErrorData
+      : allProductsErrorData;
 
 
   // ==================================================
-  // 16. ERROR
+  // PRODUCTS ARRAY
   // ==================================================
 
-  if (
-    productsError ||
-    categoriesError
-  ) {
-
-    const error =
-      productsError ||
-      categoriesError;
-
-
-    return (
-      <h2 className="loadingPage">
-
-        {t('error')}
-        :
-        {' '}
-        {error.message}
-
-      </h2>
-    );
-
-  }
+  const productList =
+    productData?.products || [];
 
 
   // ==================================================
-  // 17. PRODUCTS ARRAY
+  // CATEGORY FILTER
   // ==================================================
 
-  const allProducts =
-    productsData?.products || [];
+  /*
+    category === ''
 
+    means:
 
-  // ==================================================
-  // 18. FILTER BY CATEGORY
-  // ==================================================
+    show ALL products.
+  */
 
   const filteredProducts =
-    allProducts.filter(
-      product => {
+    category
+      ? productList.filter(
+          product =>
+            product.category ===
+            category
+        )
+      : productList;
 
-        const matchesCategory =
-          category === '' ||
-          product.category === category;
 
+  // ==================================================
+  // PAGINATION
+  // ==================================================
 
-        return matchesCategory;
-
-      }
+  const totalPages =
+    Math.max(
+      1,
+      Math.ceil(
+        filteredProducts.length /
+        itemsPerPage
+      )
     );
 
-
-  // ==================================================
-  // 19. PAGINATION
-  // ==================================================
 
   const startIndex =
     (page - 1) *
@@ -488,27 +532,115 @@ function Home() {
     );
 
 
-  const totalPages =
-    Math.ceil(
-      filteredProducts.length /
-      itemsPerPage
+  // ==================================================
+  // CATEGORY CLICK
+  // ==================================================
+
+  function handleCategoryChange(
+    newCategory
+  ) {
+
+    // Change selected category.
+
+    setCategory(
+      newCategory
     );
 
 
+    // New category starts
+    // from page 1.
+
+    setPage(1);
+
+  }
+
+
   // ==================================================
-  // 20. PAGE
+  // CLEAR FILTERS
+  // ==================================================
+
+  function handleClearFilters() {
+
+
+    // Clear search.
+
+    setSearchInput('');
+
+
+    // Return to All categories.
+
+    setCategory('');
+
+
+    // Return to first page.
+
+    setPage(1);
+
+
+    // Return to clean Home URL.
+
+    navigate('/');
+
+  }
+
+
+  // ==================================================
+  // LOADING
+  // ==================================================
+
+  if (isPending) {
+
+    return (
+
+      <h2 className="loadingPage">
+
+        {t('loading')}
+
+      </h2>
+
+    );
+
+  }
+
+
+  // ==================================================
+  // ERROR
+  // ==================================================
+
+  if (isError) {
+
+    return (
+
+      <h2 className="loadingPage">
+
+        {t('error')}:
+        {' '}
+        {error?.message}
+
+      </h2>
+
+    );
+
+  }
+
+
+  // ==================================================
+  // UI
   // ==================================================
 
   return (
+
     <main className="main">
 
 
       {/* ==========================================
-          TITLE
+          PAGE TITLE
           ========================================== */}
 
       <h1 className="title">
+
         {t('latestProducts')}
+
       </h1>
 
 
@@ -516,29 +648,41 @@ function Home() {
 
 
       {/* ==========================================
-          SEARCH
+          SEARCH AREA
           ========================================== */}
 
       <div className="searchArea">
 
+
+        {/* SEARCH */}
 
         <div className="searchBox">
 
           <input
             type="text"
             value={searchInput}
-            onChange={handleSearchChange}
-            placeholder={t('searchProducts')}
+            onChange={event =>
+              setSearchInput(
+                event.target.value
+              )
+            }
+            placeholder={
+              t('searchProducts')
+            }
           />
 
         </div>
 
 
+        {/* CLEAR FILTERS */}
+
         <button
           className="clearFiltersButton"
           onClick={handleClearFilters}
         >
+
           {t('clearFilters')}
+
         </button>
 
 
@@ -552,19 +696,25 @@ function Home() {
       <div className="shopLayout">
 
 
-        {/* ========================================
-            CATEGORY SIDEBAR
-            ======================================== */}
+        {/* ==========================================
+            SIDEBAR
+            ========================================== */}
 
         <aside className="sidebar">
 
 
+          {/* CATEGORY TITLE */}
+
           <h3>
+
             {t('categories')}
+
           </h3>
 
 
-          {/* ALL */}
+          {/* ========================================
+              ALL
+              ======================================== */}
 
           <button
             className={
@@ -573,53 +723,84 @@ function Home() {
                 : ''
             }
             onClick={() =>
-              handleCategory('')
+              handleCategoryChange('')
             }
           >
+
             {t('all')}
+
           </button>
 
 
-          {/* ======================================
+          {/* ========================================
               CATEGORIES FROM API
-
-              IMPORTANT:
-              We do NOT translate these.
-              DummyJSON gives us the names.
-              ====================================== */}
+              ======================================== */}
 
           {categories.map(
-            categoryItem => (
+            categoryItem => {
 
-              <button
-                key={categoryItem.slug}
-                className={
-                  category ===
-                  categoryItem.slug
-                    ? 'active'
-                    : ''
+
+              /*
+                DummyJSON can return:
+
+                "beauty"
+
+                OR
+
+                {
+                  slug: "beauty",
+                  name: "Beauty"
                 }
-                onClick={() =>
-                  handleCategory(
-                    categoryItem.slug
-                  )
-                }
-              >
+              */
 
-                {categoryItem.name}
 
-              </button>
+              const categoryValue =
+                typeof categoryItem ===
+                'string'
+                  ? categoryItem
+                  : categoryItem.slug;
 
-            )
+
+              const categoryName =
+                typeof categoryItem ===
+                'string'
+                  ? categoryItem
+                  : categoryItem.name;
+
+
+              return (
+
+                <button
+                  key={categoryValue}
+                  className={
+                    category ===
+                    categoryValue
+                      ? 'active'
+                      : ''
+                  }
+                  onClick={() =>
+                    handleCategoryChange(
+                      categoryValue
+                    )
+                  }
+                >
+
+                  {categoryName}
+
+                </button>
+
+              );
+
+            }
           )}
 
 
         </aside>
 
 
-        {/* ========================================
-            PRODUCTS SECTION
-            ======================================== */}
+        {/* ==========================================
+            PRODUCTS
+            ========================================== */}
 
         <section className="productsSection">
 
@@ -635,97 +816,109 @@ function Home() {
           </p>
 
 
-          {/* ======================================
-              PRODUCT CARDS
+          {/* ========================================
+              NO PRODUCTS
+              ======================================== */}
 
-              Product titles stay in English
-              because they come from DummyJSON.
-              ====================================== */}
+          {filteredProducts.length ===
+          0 ? (
 
-          {visibleProducts.length > 0 ? (
+            <p className="noResults">
 
-            <div className="productsGrid">
+              {t('noProducts')}
 
-              {visibleProducts.map(
-                product => (
-
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                  />
-
-                )
-              )}
-
-            </div>
+            </p>
 
           ) : (
 
-            <p className="noResults">
-              {t('noProducts')}
-            </p>
-
-          )}
+            <>
 
 
-          {/* ======================================
-              PAGINATION
-              ====================================== */}
+              {/* ====================================
+                  PRODUCTS GRID
+                  ==================================== */}
 
-          {totalPages > 1 && (
+              <div className="productsGrid">
 
-            <div className="pagination">
+                {visibleProducts.map(
+                  product => (
 
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                    />
 
-              {/* PREVIOUS */}
-
-              <button
-                disabled={
-                  page === 1
-                }
-                onClick={() =>
-                  setPage(
-                    page - 1
                   )
-                }
-              >
-                ← {t('previous')}
-              </button>
+                )}
+
+              </div>
 
 
-              {/* CURRENT PAGE */}
+              {/* ====================================
+                  PAGINATION
+                  ==================================== */}
 
-              <span>
-
-                {t('page')}
-                {' '}
-                {page}
-                {' '}
-                {t('of')}
-                {' '}
-                {totalPages}
-
-              </span>
+              <div className="pagination">
 
 
-              {/* NEXT */}
+                {/* PREVIOUS */}
 
-              <button
-                disabled={
-                  page ===
-                  totalPages
-                }
-                onClick={() =>
-                  setPage(
-                    page + 1
-                  )
-                }
-              >
-                {t('next')} →
-              </button>
+                <button
+                  disabled={
+                    page === 1
+                  }
+                  onClick={() =>
+                    setPage(
+                      previousPage =>
+                        previousPage - 1
+                    )
+                  }
+                >
+
+                  ← {t('previous')}
+
+                </button>
 
 
-            </div>
+                {/* PAGE NUMBER */}
+
+                <span>
+
+                  {t('page')}
+                  {' '}
+                  {page}
+                  {' '}
+                  {t('of')}
+                  {' '}
+                  {totalPages}
+
+                </span>
+
+
+                {/* NEXT */}
+
+                <button
+                  disabled={
+                    page ===
+                    totalPages
+                  }
+                  onClick={() =>
+                    setPage(
+                      previousPage =>
+                        previousPage + 1
+                    )
+                  }
+                >
+
+                  {t('next')} →
+
+                </button>
+
+
+              </div>
+
+
+            </>
 
           )}
 
@@ -737,6 +930,7 @@ function Home() {
 
 
     </main>
+
   );
 
 }

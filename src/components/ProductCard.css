@@ -6,19 +6,25 @@
   width: 100%;
 
   display: flex;
+
   flex-direction: column;
 
   overflow: hidden;
 
-  background-color: #1a1d21;
+  background-color:
+    var(--color-surface);
 
-  border: 1px solid #2d3238;
-  border-radius: 14px;
+  border:
+    1px solid
+    var(--color-border);
+
+  border-radius:
+    var(--radius-lg);
 
   transition:
-    transform 0.2s,
-    box-shadow 0.2s,
-    border-color 0.2s;
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    border-color var(--transition-fast);
 }
 
 
@@ -26,14 +32,27 @@
    PRODUCT CARD HOVER
    ================================================== */
 
-.productCard:hover {
-  transform: translateY(-4px);
+/*
+  The shadow comes from index.css.
 
-  border-color: #3d434a;
+  DARK MODE:
+  light shadow
+
+  LIGHT MODE:
+  dark shadow
+*/
+
+.productCard:hover {
+
+  transform:
+    translateY(-4px);
+
+  border-color:
+    var(--color-border-light);
 
   box-shadow:
-    0 8px 24px
-    rgba(255, 255, 255, 0.15);
+    var(--card-hover-shadow);
+
 }
 
 
@@ -45,15 +64,19 @@
   position: relative;
 
   width: 100%;
+
   height: 220px;
 
   display: flex;
+
   justify-content: center;
+
   align-items: center;
 
   overflow: hidden;
 
-  background-color: #f3f3f3;
+  background-color:
+    var(--color-image-bg);
 }
 
 
@@ -63,11 +86,13 @@
 
 .productImage img {
   width: 100%;
+
   height: 100%;
 
   object-fit: contain;
 
-  padding: 15px;
+  padding:
+    15px;
 }
 
 
@@ -79,41 +104,49 @@
   position: absolute;
 
   top: 10px;
+
   right: 10px;
 
   width: 38px;
+
   height: 38px;
 
   display: flex;
+
   justify-content: center;
+
   align-items: center;
 
   padding: 0;
 
-  background-color: rgba(
-    255,
-    255,
-    255,
-    0.9
-  );
+  background-color:
+    rgba(255, 255, 255, 0.9);
 
-  color: #d14b5a;
+  color:
+    var(--color-danger);
 
-  border: 1px solid #dddddd;
+  border:
+    1px solid
+    #dddddd;
 
-  border-radius: 50%;
+  border-radius:
+    50%;
 
-  font-size: 25px;
+  font-size:
+    25px;
 
-  line-height: 1;
+  line-height:
+    1;
 
-  cursor: pointer;
+  cursor:
+    pointer;
 
-  z-index: 2;
+  z-index:
+    2;
 
   transition:
-    transform 0.2s,
-    background-color 0.2s;
+    transform var(--transition-fast),
+    background-color var(--transition-fast);
 }
 
 
@@ -122,23 +155,29 @@
    ================================================== */
 
 .favoriteButton:hover {
-  transform: scale(1.1);
 
-  background-color: #ffffff;
+  transform:
+    scale(1.1);
+
+  background-color:
+    #ffffff;
+
 }
 
 
 /* ==================================================
-   PRODUCT INFO
+   PRODUCT INFORMATION
    ================================================== */
 
 .productInfo {
   flex: 1;
 
   display: flex;
+
   flex-direction: column;
 
-  padding: 18px;
+  padding:
+    18px;
 }
 
 
@@ -147,26 +186,33 @@
    ================================================== */
 
 .productCategory {
-  width: fit-content;
+  width:
+    fit-content;
 
-  margin-bottom: 10px;
+  margin-bottom:
+    10px;
 
-  padding: 5px 9px;
+  padding:
+    5px 9px;
 
   background-color:
     rgba(214, 168, 95, 0.12);
 
-  color: #d6a85f;
+  color:
+    var(--color-primary);
 
   border:
     1px solid
-    rgba(214, 168, 95, 0.5);
+    var(--color-primary);
 
-  border-radius: 999px;
+  border-radius:
+    var(--radius-round);
 
-  font-size: 11px;
+  font-size:
+    11px;
 
-  text-transform: capitalize;
+  text-transform:
+    capitalize;
 }
 
 
@@ -175,13 +221,17 @@
    ================================================== */
 
 .productTitle {
-  margin: 0 0 12px;
+  margin:
+    0 0 12px;
 
-  color: #f2f2f2;
+  color:
+    var(--color-text);
 
-  font-size: 17px;
+  font-size:
+    17px;
 
-  line-height: 1.3;
+  line-height:
+    1.3;
 }
 
 
@@ -190,11 +240,14 @@
    ================================================== */
 
 .productRating {
-  margin: 0 0 10px;
+  margin:
+    0 0 10px;
 
-  color: #d9dde1;
+  color:
+    var(--color-text-secondary);
 
-  font-size: 14px;
+  font-size:
+    var(--font-sm);
 }
 
 
@@ -203,13 +256,17 @@
    ================================================== */
 
 .productPrice {
-  margin: 0 0 18px;
+  margin:
+    0 0 18px;
 
-  color: #d6a85f;
+  color:
+    var(--color-primary);
 
-  font-size: 22px;
+  font-size:
+    22px;
 
-  font-weight: bold;
+  font-weight:
+    bold;
 }
 
 
@@ -220,74 +277,51 @@
 .viewButton {
   width: 100%;
 
-  margin-top: auto;
+  margin-top:
+    auto;
 
-  padding: 10px 14px;
+  padding:
+    10px 14px;
 
-  background-color: #d6a85f;
+  background-color:
+    var(--color-primary);
 
-  color: #111315;
+  color:
+    #111315;
 
-  border-radius: 8px;
+  border-radius:
+    var(--radius-md);
 
-  text-align: center;
+  text-align:
+    center;
 
-  text-decoration: none;
+  text-decoration:
+    none;
 
-  font-size: 14px;
+  font-size:
+    var(--font-sm);
 
-  font-weight: bold;
+  font-weight:
+    bold;
 
   transition:
-    background-color 0.2s,
-    transform 0.2s;
+    background-color var(--transition-fast),
+    transform var(--transition-fast);
 }
 
 
 /* ==================================================
-   VIEW DETAILS BUTTON HOVER
+   VIEW DETAILS HOVER
    ================================================== */
 
 .viewButton:hover {
-  background-color: #e3bd7f;
 
-  transform: translateY(-1px);
-}
+  background-color:
+    var(--color-primary-light);
 
+  transform:
+    translateY(-1px);
 
-/* ==================================================
-   LIGHT THEME
-   ================================================== */
-
-body.lightTheme .productCard {
-  background-color: #ffffff;
-
-  border-color: #dddddd;
-}
-
-
-/* Card hover in light theme */
-
-body.lightTheme .productCard:hover {
-  border-color: #cccccc;
-
-  box-shadow:
-    0 8px 24px
-    rgba(0, 0, 0, 0.12);
-}
-
-
-/* Product title */
-
-body.lightTheme .productTitle {
-  color: #222222;
-}
-
-
-/* Rating */
-
-body.lightTheme .productRating {
-  color: #555555;
 }
 
 
@@ -297,31 +331,50 @@ body.lightTheme .productRating {
 
 @media (max-width: 600px) {
 
+
+  /* PRODUCT IMAGE */
+
   .productImage {
-    height: 200px;
+    height:
+      200px;
   }
 
+
+  /* PRODUCT INFO */
 
   .productInfo {
-    padding: 15px;
+    padding:
+      15px;
   }
 
+
+  /* TITLE */
 
   .productTitle {
-    font-size: 16px;
+    font-size:
+      var(--font-base);
   }
 
+
+  /* PRICE */
 
   .productPrice {
-    font-size: 20px;
+    font-size:
+      var(--font-lg);
   }
 
 
-  .favoriteButton {
-    width: 36px;
-    height: 36px;
+  /* FAVORITE BUTTON */
 
-    font-size: 23px;
+  .favoriteButton {
+    width:
+      36px;
+
+    height:
+      36px;
+
+    font-size:
+      23px;
   }
 
 }

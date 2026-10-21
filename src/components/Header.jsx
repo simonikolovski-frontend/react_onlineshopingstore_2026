@@ -4,49 +4,30 @@
 
 import {
   NavLink,
+  Link,
   useNavigate
 } from 'react-router-dom';
 
 
 // ==================================================
-// CART CONTEXT
+// CONTEXTS
 // ==================================================
 
 import {
   useCart
 } from '../context/CartContext.jsx';
 
-
-// ==================================================
-// FAVORITES CONTEXT
-// ==================================================
-
 import {
   useFavorites
 } from '../context/FavoritesContext.jsx';
-
-
-// ==================================================
-// THEME CONTEXT
-// ==================================================
 
 import {
   useTheme
 } from '../context/ThemeContext.jsx';
 
-
-// ==================================================
-// AUTH CONTEXT
-// ==================================================
-
 import {
   useAuth
 } from '../context/AuthContext.jsx';
-
-
-// ==================================================
-// LANGUAGE CONTEXT
-// ==================================================
 
 import {
   useLanguage
@@ -54,7 +35,7 @@ import {
 
 
 // ==================================================
-// HEADER COMPONENT
+// HEADER
 // ==================================================
 
 function Header() {
@@ -123,11 +104,13 @@ function Header() {
   // FAVORITES COUNT
   // ==================================================
 
-  // If user is logged in:
-  // show the real number of favorites.
-  //
-  // If user is logged out:
-  // show 0.
+  /*
+    If user is logged in:
+    show real favorites count.
+
+    If user is logged out:
+    show 0.
+  */
 
   const favoritesCount =
     user
@@ -136,31 +119,27 @@ function Header() {
 
 
   // ==================================================
-  // LOGOUT FUNCTION
+  // LOGOUT
   // ==================================================
 
   function handleLogout() {
 
-
-    // Empty the shopping cart.
-
+    // Empty cart.
     clearCart();
 
 
     // Logout user.
-
     logout();
 
 
-    // Return to home page.
-
+    // Go to Home.
     navigate('/');
 
   }
 
 
   // ==================================================
-  // HEADER UI
+  // UI
   // ==================================================
 
   return (
@@ -170,17 +149,32 @@ function Header() {
 
       {/* ==========================================
           LOGO
-          ========================================== */}
+          ==========================================
 
-      <div className="logo">
+          When clicked:
+
+          /?reset=1
+
+          Home.jsx sees reset=1
+          and resets:
+
+          Search
+          Category
+          Pagination
+      */}
+
+      <Link
+        to="/?reset=1"
+        className="logo"
+      >
 
         Ecommerce
 
-      </div>
+      </Link>
 
 
       {/* ==========================================
-          MAIN NAVIGATION
+          NAVIGATION
           ========================================== */}
 
       <nav className="nav">
@@ -188,19 +182,26 @@ function Header() {
 
         {/* HOME */}
 
-        <NavLink
-          to="/"
-          end
-          className={({ isActive }) =>
-            isActive
-              ? 'active'
-              : ''
-          }
-        >
+{/* ==================================================
+    HOME
 
-          {t('home')}
+    Same as the Ecommerce logo:
+    - clears search
+    - returns category to All
+    - returns pagination to page 1
+    ================================================== */}
 
-        </NavLink>
+<NavLink
+  to="/?reset=1"
+  end
+  className={({ isActive }) =>
+    isActive
+      ? 'active'
+      : ''
+  }
+>
+  {t('home')}
+</NavLink>
 
 
         {/* ABOUT */}
@@ -229,9 +230,9 @@ function Header() {
       <div className="headerButtons">
 
 
-        {/* ========================================
-            THEME BUTTON
-            ======================================== */}
+        {/* ==========================================
+            THEME
+            ========================================== */}
 
         <button
           onClick={toggleTheme}
@@ -244,9 +245,9 @@ function Header() {
         </button>
 
 
-        {/* ========================================
-            LANGUAGE BUTTON
-            ======================================== */}
+        {/* ==========================================
+            LANGUAGE
+            ========================================== */}
 
         <button
           onClick={changeLanguage}
@@ -257,25 +258,23 @@ function Header() {
         </button>
 
 
-        {/* ========================================
-            AUTHENTICATION
-            ======================================== */}
+        {/* ==========================================
+            AUTH
+            ========================================== */}
 
         {user ? (
 
           <>
 
 
-            {/* WELCOME USER */}
-
             <span className="welcomeUser">
 
-              {t('welcome')}, {user.name}
+              {t('welcome')},
+              {' '}
+              {user.name}
 
             </span>
 
-
-            {/* LOGOUT */}
 
             <button
               onClick={handleLogout}
@@ -293,8 +292,6 @@ function Header() {
           <>
 
 
-            {/* LOGIN */}
-
             <button
               onClick={login}
             >
@@ -303,8 +300,6 @@ function Header() {
 
             </button>
 
-
-            {/* REGISTER */}
 
             <button>
 
@@ -318,9 +313,9 @@ function Header() {
         )}
 
 
-        {/* ========================================
+        {/* ==========================================
             FAVORITES
-            ======================================== */}
+            ========================================== */}
 
         <NavLink
           to="/favorites"
@@ -334,9 +329,9 @@ function Header() {
         </NavLink>
 
 
-        {/* ========================================
+        {/* ==========================================
             CART
-            ======================================== */}
+            ========================================== */}
 
         <NavLink
           to="/cart"
@@ -360,4 +355,4 @@ function Header() {
 }
 
 
-export default Header;
+export default Header;  
