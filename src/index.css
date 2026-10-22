@@ -322,3 +322,54 @@ body.lightTheme {
     rgba(0, 0, 0, 0.12);
 
 }
+
+/* ==================================================
+   KEYBOARD FOCUS
+   ================================================== */
+
+/*
+  Shows a clear outline when the user
+  navigates with the keyboard.
+
+  :focus-visible appears mainly when
+  using Tab / keyboard navigation.
+*/
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+  outline:
+    3px solid
+    var(--color-primary);
+
+  outline-offset:
+    3px;
+}
+
+/* ==================================================
+   SCREEN READER ONLY
+   ================================================== */
+
+/*
+  This hides text visually,
+  but keeps it available
+  for screen readers.
+*/
+
+.sr-only {
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+
+  padding: 0;
+  margin: -1px;
+
+  overflow: hidden;
+
+  clip: rect(0, 0, 0, 0);
+
+  white-space: nowrap;
+
+  border: 0;
+}

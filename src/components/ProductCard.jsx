@@ -1,14 +1,24 @@
 // ==================================================
+// REACT
+// ==================================================
+
+import {
+  memo
+} from 'react';
+
+
+// ==================================================
 // REACT ROUTER
 // ==================================================
 
 import {
-  Link
+  Link,
+  useLocation
 } from 'react-router-dom';
 
 
 // ==================================================
-// FAVORITES CONTEXT
+// FAVORITES
 // ==================================================
 
 import {
@@ -17,7 +27,7 @@ import {
 
 
 // ==================================================
-// AUTH CONTEXT
+// AUTH
 // ==================================================
 
 import {
@@ -26,7 +36,7 @@ import {
 
 
 // ==================================================
-// LANGUAGE CONTEXT
+// LANGUAGE
 // ==================================================
 
 import {
@@ -35,14 +45,14 @@ import {
 
 
 // ==================================================
-// PRODUCT CARD CSS
+// STYLES
 // ==================================================
 
 import './ProductCard.css';
 
 
 // ==================================================
-// PRODUCT CARD COMPONENT
+// PRODUCT CARD
 // ==================================================
 
 function ProductCard({
@@ -51,7 +61,30 @@ function ProductCard({
 
 
   // ==================================================
-  // 1. FAVORITES CONTEXT
+  // LOCATION
+  // ==================================================
+
+  const location =
+    useLocation();
+
+
+  /*
+    Remember where this card
+    was opened from.
+
+    Examples:
+
+    /
+
+    /search?q=phone
+  */
+
+  const currentPage =
+    `${location.pathname}${location.search}`;
+
+
+  // ==================================================
+  // FAVORITES
   // ==================================================
 
   const {
@@ -61,11 +94,8 @@ function ProductCard({
 
 
   // ==================================================
-  // 2. AUTH CONTEXT
+  // AUTH
   // ==================================================
-
-  // user tells us if somebody
-  // is currently logged in.
 
   const {
     user
@@ -73,38 +103,29 @@ function ProductCard({
 
 
   // ==================================================
-  // 3. LANGUAGE CONTEXT
+  // LANGUAGE
   // ==================================================
 
   const {
     t
   } = useLanguage();
 
-// ==================================================
-// CHECK FAVORITE
-// ==================================================
 
-// A product can look selected as favorite
-// only when a user is logged in.
-//
-// If there is no user:
-// favorite will always be false.
+  // ==================================================
+  // CHECK FAVORITE
+  // ==================================================
 
-const favorite =
-  user
-    ? isFavorite(product)
-    : false;
+  const favorite =
+    user
+      ? isFavorite(product)
+      : false;
 
 
   // ==================================================
-  // 5. HANDLE FAVORITE CLICK
+  // FAVORITE CLICK
   // ==================================================
 
   function handleFavoriteClick() {
-
-
-    // If there is NO logged-in user,
-    // do not add the product to favorites.
 
     if (!user) {
 
@@ -117,16 +138,13 @@ const favorite =
     }
 
 
-    // If user is logged in,
-    // add/remove the favorite product.
-
     toggleFavorite(product);
 
   }
 
 
   // ==================================================
-  // 6. PRODUCT CARD
+  // UI
   // ==================================================
 
   return (
@@ -141,11 +159,10 @@ const favorite =
       <div className="productImage">
 
 
-        {/* ========================================
-            FAVORITE BUTTON
-            ======================================== */}
+        {/* FAVORITE BUTTON */}
 
         <button
+          type="button"
           className="favoriteButton"
           onClick={handleFavoriteClick}
           title={
@@ -162,13 +179,10 @@ const favorite =
         </button>
 
 
-        {/* PRODUCT IMAGE */}
-
         <img
           src={product.thumbnail}
           alt={product.title}
         />
-
 
       </div>
 
@@ -216,10 +230,18 @@ const favorite =
         </p>
 
 
-        {/* DETAILS */}
+        {/* ==========================================
+            VIEW DETAILS
+
+            Save the current page
+            inside router state.
+            ========================================== */}
 
         <Link
           to={`/products/${product.id}`}
+          state={{
+            from: currentPage
+          }}
           className="viewButton"
         >
 
@@ -230,7 +252,6 @@ const favorite =
 
       </div>
 
-
     </div>
 
   );
@@ -238,4 +259,8 @@ const favorite =
 }
 
 
-export default ProductCard;
+// ==================================================
+// MEMOIZED PRODUCT CARD
+// ==================================================
+
+export default memo(ProductCard);

@@ -1,4 +1,14 @@
 // ==================================================
+// REACT
+// ==================================================
+
+import {
+  lazy,
+  Suspense
+} from 'react';
+
+
+// ==================================================
 // REACT ROUTER
 // ==================================================
 
@@ -29,14 +39,32 @@ import About
 import Cart
   from './pages/Cart.jsx';
 
-import ProductDetails
-  from './pages/ProductDetails.jsx';
-
 import Favorites
   from './pages/Favorites.jsx';
 
 import NotFound
   from './pages/NotFound.jsx';
+
+
+// ==================================================
+// LAZY LOADED PAGE
+// ==================================================
+
+/*
+  ProductDetails is NOT loaded immediately.
+
+  React will load this file only when
+  the user opens a product details page.
+
+  Example:
+
+  /products/5
+*/
+
+const ProductDetails =
+  lazy(() =>
+    import('./pages/ProductDetails.jsx')
+  );
 
 
 // ==================================================
@@ -56,18 +84,15 @@ function App() {
 
     <Routes>
 
-
-      {/* ==========================================
-          MAIN LAYOUT
-          ========================================== */}
-
       <Route
         path="/"
         element={<Layout />}
       >
 
 
-        {/* HOME */}
+        {/* ==========================================
+            HOME
+            ========================================== */}
 
         <Route
           index
@@ -75,7 +100,9 @@ function App() {
         />
 
 
-        {/* PRODUCTS */}
+        {/* ==========================================
+            PRODUCTS
+            ========================================== */}
 
         <Route
           path="products"
@@ -83,7 +110,9 @@ function App() {
         />
 
 
-        {/* SEARCH */}
+        {/* ==========================================
+            SEARCH
+            ========================================== */}
 
         <Route
           path="search"
@@ -91,7 +120,9 @@ function App() {
         />
 
 
-        {/* ABOUT */}
+        {/* ==========================================
+            ABOUT
+            ========================================== */}
 
         <Route
           path="about"
@@ -99,15 +130,36 @@ function App() {
         />
 
 
-        {/* PRODUCT DETAILS */}
+        {/* ==========================================
+            PRODUCT DETAILS
+            LAZY LOADED
+            ========================================== */}
 
         <Route
           path="products/:id"
-          element={<ProductDetails />}
+          element={
+
+            <Suspense
+              fallback={
+
+                <p className="loadingPage">
+                  Loading...
+                </p>
+
+              }
+            >
+
+              <ProductDetails />
+
+            </Suspense>
+
+          }
         />
 
 
-        {/* CART */}
+        {/* ==========================================
+            CART
+            ========================================== */}
 
         <Route
           path="cart"
@@ -115,7 +167,9 @@ function App() {
         />
 
 
-        {/* FAVORITES */}
+        {/* ==========================================
+            FAVORITES
+            ========================================== */}
 
         <Route
           path="favorites"
@@ -123,22 +177,21 @@ function App() {
         />
 
 
-        {/* 404 */}
+        {/* ==========================================
+            NOT FOUND
+            ========================================== */}
 
         <Route
           path="*"
           element={<NotFound />}
         />
 
-
       </Route>
-
 
     </Routes>
 
   );
 
 }
-
 
 export default App;

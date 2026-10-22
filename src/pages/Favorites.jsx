@@ -1,4 +1,13 @@
 // ==================================================
+// REACT
+// ==================================================
+
+import {
+  useCallback
+} from 'react';
+
+
+// ==================================================
 // REACT ROUTER
 // ==================================================
 
@@ -57,6 +66,30 @@ function Favorites() {
     favorites,
     removeFavorite
   } = useFavorites();
+
+// ==================================================
+// REMOVE FAVORITE CALLBACK
+// ==================================================
+
+/*
+  useCallback keeps the same
+  function reference between renders.
+
+  A new function is created only
+  when removeFavorite changes.
+*/
+
+const handleRemoveFavorite =
+  useCallback(
+    product => {
+
+      removeFavorite(product);
+
+    },
+    [
+      removeFavorite
+    ]
+  );
 
 
   // ==================================================
@@ -151,9 +184,8 @@ function Favorites() {
 
               product={product}
 
-              onRemove={
-                removeFavorite
-              }
+onRemove={handleRemoveFavorite}
+              
 
               removeText={
                 t('remove')

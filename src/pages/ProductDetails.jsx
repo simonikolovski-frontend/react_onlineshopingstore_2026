@@ -3,8 +3,9 @@
 // ==================================================
 
 import {
-  useParams,
-  useNavigate
+  useLocation,
+  useNavigate,
+  useParams
 } from 'react-router-dom';
 
 
@@ -27,16 +28,26 @@ import {
 
 
 // ==================================================
-// CONTEXTS
+// CART
 // ==================================================
 
 import {
   useCart
 } from '../context/CartContext.jsx';
 
+
+// ==================================================
+// AUTH
+// ==================================================
+
 import {
   useAuth
 } from '../context/AuthContext.jsx';
+
+
+// ==================================================
+// LANGUAGE
+// ==================================================
 
 import {
   useLanguage
@@ -44,23 +55,16 @@ import {
 
 
 // ==================================================
-// PRODUCT DETAILS COMPONENT
+// PRODUCT DETAILS
 // ==================================================
 
 function ProductDetails() {
 
 
   // ==================================================
-  // 1. ROUTER
+  // ROUTER
   // ==================================================
 
-  // Get product ID from the URL.
-  //
-  // Example:
-  //
-  // /products/5
-  //
-  // id = "5"
   const {
     id
   } = useParams();
@@ -70,17 +74,34 @@ function ProductDetails() {
     useNavigate();
 
 
+  const location =
+    useLocation();
+
+
   // ==================================================
-  // 2. CART CONTEXT
+  // CART
   // ==================================================
 
-  const {
+  /*
+    items
+    → all products currently in the cart
+
     addItem
+    → adds a product
+
+    removeItem
+    → removes a product
+  */
+
+  const {
+    items,
+    addItem,
+    removeItem
   } = useCart();
 
 
   // ==================================================
-  // 3. AUTH CONTEXT
+  // AUTH
   // ==================================================
 
   const {
@@ -89,18 +110,16 @@ function ProductDetails() {
 
 
   // ==================================================
-  // 4. LANGUAGE CONTEXT
+  // LANGUAGE
   // ==================================================
 
-  // t() gives us the correct
-  // English or Macedonian text.
   const {
     t
   } = useLanguage();
 
 
   // ==================================================
-  // 5. PRODUCT QUERY
+  // LOAD PRODUCT
   // ==================================================
 
   const {
@@ -110,22 +129,14 @@ function ProductDetails() {
     error
   } = useQuery({
 
-
-    // Every product gets
-    // its own cache.
-    //
-    // Example:
-    //
-    // ['product', '5']
     queryKey: [
       'product',
       id
     ],
 
-
-    // Load the product
-    // from DummyJSON.
-    queryFn: ({ signal }) => {
+    queryFn: ({
+      signal
+    }) => {
 
       return products.getById(
         id,
@@ -140,14 +151,118 @@ function ProductDetails() {
 
 
   // ==================================================
-  // 6. ADD TO CART
+  // BACK PAGE
   // ==================================================
 
-  function handleAddToCart() {
+  /*
+    We remember where the user
+    opened Product Details from.
+
+    Examples:
+
+    /favorites
+    /cart
+    /
+    /search?q=phone
+  */
+
+  const backTo =
+    location.state?.from || '/';
 
 
-    // If user is NOT logged in,
-    // do not add the product.
+  // ==================================================
+  // BACK BUTTON
+  // ==================================================
+
+  function handleBack() {
+
+    navigate(
+      backTo
+    );
+
+  }
+
+
+  // ==================================================
+  // LOADING
+  // ==================================================
+
+  if (isPending) {
+
+    return (
+
+      <h2 className="loadingPage">
+
+        {t('loading')}
+
+      </h2>
+
+    );
+
+  }
+
+
+  // ==================================================
+  // ERROR
+  // ==================================================
+
+  if (isError) {
+
+    return (
+
+      <h2 className="loadingPage">
+
+        {t('error')}:
+        {' '}
+        {error?.message}
+
+      </h2>
+
+    );
+
+  }
+
+
+  // ==================================================
+  // CHECK IF PRODUCT IS ALREADY IN CART
+  // ==================================================
+
+  /*
+    some() checks every cart item.
+
+    If it finds the same product id,
+    it returns true.
+
+    Example:
+
+    Cart:
+    id 1
+    id 5
+    id 8
+
+    Current product:
+    id 5
+
+    result:
+    true
+  */
+
+  const isInCart =
+    items.some(
+      item =>
+        item.id === product.id
+    );
+
+
+  // ==================================================
+  // CART BUTTON
+  // ==================================================
+
+  function handleCartClick() {
+
+
+    // User must be logged in.
+
     if (!user) {
 
       alert(
@@ -159,52 +274,38 @@ function ProductDetails() {
     }
 
 
-    // User is logged in.
-    // Add product to cart.
-    addItem(product);
+    // ==============================================
+    // PRODUCT IS ALREADY IN CART
+    // ==============================================
 
-  }
+    if (isInCart) {
+
+      removeItem(
+        product
+      );
+
+      return;
+
+    }
 
 
-  // ==================================================
-  // 7. LOADING
-  // ==================================================
+    // ==============================================
+    // PRODUCT IS NOT IN CART
+    // ==============================================
 
-  if (isPending) {
-
-    return (
-      <h2 className="loadingPage">
-        {t('loading')}
-      </h2>
+    addItem(
+      product
     );
 
   }
 
 
   // ==================================================
-  // 8. ERROR
-  // ==================================================
-
-  if (isError) {
-
-    return (
-      <h2 className="loadingPage">
-
-        {t('error')}:
-        {' '}
-        {error.message}
-
-      </h2>
-    );
-
-  }
-
-
-  // ==================================================
-  // 9. PRODUCT DETAILS PAGE
+  // UI
   // ==================================================
 
   return (
+
     <main className="detailsPage">
 
 
@@ -213,12 +314,13 @@ function ProductDetails() {
           ========================================== */}
 
       <button
+        type="button"
         className="backButton"
-        onClick={() =>
-          navigate(-1)
-        }
+        onClick={handleBack}
       >
+
         ← {t('back')}
+
       </button>
 
 
@@ -250,9 +352,7 @@ function ProductDetails() {
         <div className="detailsInfo">
 
 
-          {/* CATEGORY
-              Comes from DummyJSON.
-              We do NOT translate it. */}
+          {/* CATEGORY */}
 
           <span className="detailsCategory">
 
@@ -261,8 +361,7 @@ function ProductDetails() {
           </span>
 
 
-          {/* PRODUCT TITLE
-              Comes from DummyJSON. */}
+          {/* TITLE */}
 
           <h1>
 
@@ -273,17 +372,13 @@ function ProductDetails() {
 
           {/* BRAND */}
 
-          {product.brand && (
+          <p className="detailsBrand">
 
-            <p className="detailsBrand">
+            {t('brand')}:
+            {' '}
+            {product.brand}
 
-              {t('brand')}:
-              {' '}
-              {product.brand}
-
-            </p>
-
-          )}
+          </p>
 
 
           {/* RATING */}
@@ -304,9 +399,7 @@ function ProductDetails() {
           </p>
 
 
-          {/* DESCRIPTION
-              Comes from DummyJSON.
-              We do NOT translate it. */}
+          {/* DESCRIPTION */}
 
           <p className="detailsDescription">
 
@@ -315,8 +408,7 @@ function ProductDetails() {
           </p>
 
 
-          {/* AVAILABILITY
-              Comes from DummyJSON. */}
+          {/* STOCK */}
 
           <p className="detailsStock">
 
@@ -325,8 +417,7 @@ function ProductDetails() {
           </p>
 
 
-          {/* SHIPPING
-              Comes from DummyJSON. */}
+          {/* SHIPPING */}
 
           <p className="detailsShipping">
 
@@ -336,17 +427,26 @@ function ProductDetails() {
 
 
           {/* ======================================
-              ADD TO CART BUTTON
+              ADD / REMOVE CART BUTTON
               ====================================== */}
 
           <button
-            className="addCartButton"
-            onClick={handleAddToCart}
+            type="button"
+            className={
+              isInCart
+                ? 'addCartButton removeFromCartButton'
+                : 'addCartButton'
+            }
+            onClick={
+              handleCartClick
+            }
           >
 
-            {user
-              ? t('addToCart')
-              : t('loginToAddToCart')}
+            {isInCart
+              ? 'Remove from Cart'
+              : user
+                ? t('addToCart')
+                : t('loginToAddToCart')}
 
           </button>
 
@@ -358,6 +458,7 @@ function ProductDetails() {
 
 
     </main>
+
   );
 
 }

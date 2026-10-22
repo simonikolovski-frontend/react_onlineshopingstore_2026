@@ -1,26 +1,55 @@
-// Outlet shows the current page.
-import { Outlet } from 'react-router-dom';
+// ==================================================
+// REACT ROUTER
+// ==================================================
 
-import Header from '../components/Header.jsx';
-import Breadcrumb from '../components/Breadcrumb.jsx';
+import {
+  Outlet
+} from 'react-router-dom';
 
+
+// ==================================================
+// COMPONENTS
+// ==================================================
+
+import Header
+  from '../components/Header.jsx';
+
+import Breadcrumb
+  from '../components/Breadcrumb.jsx';
+
+
+// ==================================================
+// LAYOUT
+// ==================================================
 
 function Layout() {
+
   return (
     <>
-      {/* Shared header */}
+
+      {/* NAVBAR - stays normal size */}
+
       <Header />
 
 
-      {/* Shared breadcrumb */}
-      <Breadcrumb />
+      {/* ==========================================
+          PAGE CONTENT
 
+          Everything below the navbar
+          can now be resized together.
+          ========================================== */}
 
-      {/* Current page */}
-      <Outlet />
+      <div className="pageContent">
+
+        <Breadcrumb />
+
+        <Outlet />
+
+      </div>
+
     </>
   );
-}
 
+}
 
 export default Layout;

@@ -22,26 +22,23 @@ body {
    ================================================== */
 
 .header {
-  width: 100%;
+  width:
+    100%;
 
-  display: grid;
+  display:
+    grid;
 
   grid-template-columns:
     1fr auto 1fr;
 
-  align-items: center;
+  align-items:
+    center;
 
   padding:
     9px 30px;
 
-
-  /* More transparency in dark mode */
-
   background-color:
     rgba(22, 25, 29, 0.82);
-
-
-  /* Glass effect */
 
   backdrop-filter:
     blur(8px);
@@ -49,23 +46,13 @@ body {
   -webkit-backdrop-filter:
     blur(8px);
 
-
-  /* Border */
-
   border-bottom:
     1px solid
     var(--color-border);
 
-
-  /* Light shadow so it is visible
-     on dark background */
-
   box-shadow:
     0 4px 18px
     rgba(255, 255, 255, 0.10);
-
-
-  /* Sticky navbar */
 
   position:
     sticky;
@@ -93,7 +80,7 @@ body.lightTheme .header {
 
 
 /* ==================================================
-   LOGO
+   ANIMATED LOGO
    ================================================== */
 
 .logo {
@@ -106,24 +93,71 @@ body.lightTheme .header {
   font-weight:
     bold;
 
-  color:
-    var(--color-text);
-
   text-decoration:
     none;
 
   cursor:
     pointer;
 
+  background:
+    linear-gradient(
+      100deg,
+      var(--color-primary),
+      #fff0c7,
+      var(--color-primary-light),
+      #ffffff,
+      var(--color-primary)
+    );
+
+  background-size:
+    250% 100%;
+
+  background-clip:
+    text;
+
+  -webkit-background-clip:
+    text;
+
+  color:
+    transparent;
+
+  -webkit-text-fill-color:
+    transparent;
+
+  animation:
+    logoFlow
+    5s
+    linear
+    infinite;
+
   transition:
-    color
+    transform
     var(--transition-fast);
 }
 
 
 .logo:hover {
-  color:
-    var(--color-primary);
+  transform:
+    scale(1.04);
+}
+
+
+/* ==================================================
+   LOGO ANIMATION
+   ================================================== */
+
+@keyframes logoFlow {
+
+  from {
+    background-position:
+      0% 50%;
+  }
+
+  to {
+    background-position:
+      250% 50%;
+  }
+
 }
 
 
@@ -161,12 +195,7 @@ body.lightTheme .header {
 }
 
 
-.nav a:hover {
-  color:
-    var(--color-primary);
-}
-
-
+.nav a:hover,
 .nav a.active {
   color:
     var(--color-primary);
@@ -191,10 +220,6 @@ body.lightTheme .header {
     6px;
 }
 
-
-/* ==================================================
-   HEADER BUTTONS
-   ================================================== */
 
 .headerButtons button {
   padding:
@@ -231,12 +256,9 @@ body.lightTheme .header {
   cursor:
     pointer;
 
-  /* Do not break Light or Macedonian
-     into two lines */
   white-space:
     nowrap;
 
-  /* Do not squeeze the button */
   flex-shrink:
     0;
 
@@ -424,7 +446,76 @@ body.lightTheme .header {
     700;
 
   color:
-    var(--color-text);
+    #ffffff;
+
+  text-shadow:
+    0 0 4px
+    rgba(255, 255, 255, 0.55),
+
+    0 0 10px
+    rgba(214, 168, 95, 0.45),
+
+    0 0 20px
+    rgba(214, 168, 95, 0.25);
+
+  animation:
+    titleFlicker
+    4s
+    linear
+    infinite;
+}
+
+
+/* ==================================================
+   TITLE FLICKER
+   ================================================== */
+
+@keyframes titleFlicker {
+
+  0%,
+  90%,
+  100% {
+    opacity:
+      1;
+  }
+
+  92% {
+    opacity:
+      0.85;
+  }
+
+  94% {
+    opacity:
+      1;
+  }
+
+  96% {
+    opacity:
+      0.92;
+  }
+
+  98% {
+    opacity:
+      1;
+  }
+
+}
+
+
+/* ==================================================
+   LIGHT MODE TITLE
+   ================================================== */
+
+body.lightTheme .title {
+  color:
+    #222222;
+
+  text-shadow:
+    0 0 6px
+    rgba(214, 168, 95, 0.35),
+
+    0 0 14px
+    rgba(214, 168, 95, 0.20);
 }
 
 
@@ -449,7 +540,32 @@ body.lightTheme .header {
 
 
 /* ==================================================
-   SEARCH
+   ANIMATED BORDER VARIABLE
+   ================================================== */
+
+@property --search-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+
+/* ==================================================
+   BORDER ANIMATION
+   ================================================== */
+
+@keyframes searchBorderSpin {
+
+  to {
+    --search-angle:
+      360deg;
+  }
+
+}
+
+
+/* ==================================================
+   SEARCH BOX
    ================================================== */
 
 .searchBox {
@@ -462,10 +578,41 @@ body.lightTheme .header {
   justify-content:
     center;
 
+  padding:
+    2px;
+
+  border-radius:
+    12px;
+
+  background:
+    conic-gradient(
+      from var(--search-angle),
+
+      transparent 0deg,
+
+      var(--color-primary) 70deg,
+
+      var(--color-primary-light) 110deg,
+
+      transparent 160deg,
+
+      transparent 360deg
+    );
+
+  animation:
+    searchBorderSpin
+    5s
+    linear
+    infinite;
+
   margin-bottom:
     var(--space-lg);
 }
 
+
+/* ==================================================
+   SEARCH INPUT
+   ================================================== */
 
 .searchBox input {
   width:
@@ -484,8 +631,7 @@ body.lightTheme .header {
     var(--color-text);
 
   border:
-    1px solid
-    var(--color-border-light);
+    none;
 
   border-radius:
     10px;
@@ -508,12 +654,19 @@ body.lightTheme .header {
   outline:
     none;
 
-  border-color:
-    var(--color-primary);
+  box-shadow:
+    inset 0 0 0 1px
+    rgba(214, 168, 95, 0.35);
+}
+
+
+.searchBox input:focus-visible {
+  outline:
+    none;
 
   box-shadow:
-    0 0 0 3px
-    rgba(214, 168, 95, 0.12);
+    inset 0 0 0 1px
+    var(--color-primary);
 }
 
 
@@ -564,7 +717,7 @@ body.lightTheme .header {
 
 
 /* ==================================================
-   CLEAR FILTERS BUTTON
+   CLEAR FILTERS
    ================================================== */
 
 .clearFiltersButton {
@@ -652,16 +805,51 @@ body.lightTheme .header {
   background-color:
     var(--color-header);
 
+  /* Thin border */
+
   border:
-    1px solid
+    0.5px solid
     var(--color-border);
 
   border-radius:
     var(--radius-lg);
+
+  box-shadow:
+    var(--shadow-md);
 }
 
 
-.sidebar h3 {
+/* ==================================================
+   SIDEBAR DARK SHADOW
+   ================================================== */
+
+body:not(.lightTheme) .sidebar {
+  box-shadow:
+    0 0 14px
+    rgba(255, 255, 255, 0.07),
+
+    0 8px 24px
+    rgba(255, 255, 255, 0.08);
+}
+
+
+/* ==================================================
+   SIDEBAR LIGHT SHADOW
+   ================================================== */
+
+body.lightTheme .sidebar {
+  box-shadow:
+    0 8px 24px
+    rgba(0, 0, 0, 0.10);
+}
+
+
+/* ==================================================
+   CATEGORY TITLE
+   DESKTOP
+   ================================================== */
+
+.categoryTitle {
   margin:
     0 0 18px;
 
@@ -676,7 +864,36 @@ body.lightTheme .header {
 }
 
 
-.sidebar button {
+/* ==================================================
+   CATEGORY TOGGLE
+   HIDDEN ON DESKTOP
+   ================================================== */
+
+.categoryToggle {
+  display:
+    none;
+}
+
+
+/* ==================================================
+   CATEGORY OPTIONS
+   DESKTOP = ALWAYS OPEN
+   ================================================== */
+
+.categoryOptions {
+  display:
+    flex;
+
+  flex-direction:
+    column;
+}
+
+
+/* ==================================================
+   SIDEBAR CATEGORY BUTTONS
+   ================================================== */
+
+.categoryOptions button {
   width:
     100%;
 
@@ -712,7 +929,7 @@ body.lightTheme .header {
 }
 
 
-.sidebar button:hover {
+.categoryOptions button:hover {
   background-color:
     var(--color-surface-hover);
 
@@ -721,7 +938,7 @@ body.lightTheme .header {
 }
 
 
-.sidebar button.active {
+.categoryOptions button.active {
   background-color:
     var(--color-primary);
 
@@ -763,15 +980,9 @@ body.lightTheme .header {
 
 
 /* ==================================================
-   RESPONSIVE PRODUCTS GRID
+   PRODUCT GRID
+   MOBILE FIRST
    ================================================== */
-
-/*
-  MOBILE FIRST
-
-  By default:
-  1 card per row.
-*/
 
 .productsGrid {
   width:
@@ -791,7 +1002,6 @@ body.lightTheme .header {
 /* ==================================================
    TABLET
    600px+
-   2 CARDS
    ================================================== */
 
 @media (min-width: 600px) {
@@ -807,7 +1017,6 @@ body.lightTheme .header {
 /* ==================================================
    DESKTOP
    1024px+
-   3 CARDS
    ================================================== */
 
 @media (min-width: 1024px) {
@@ -823,7 +1032,6 @@ body.lightTheme .header {
 /* ==================================================
    LARGE DESKTOP
    1400px+
-   4 CARDS
    ================================================== */
 
 @media (min-width: 1400px) {
@@ -942,7 +1150,7 @@ body.lightTheme .header {
 
 
 /* ==================================================
-   ABOUT PAGE
+   ABOUT
    ================================================== */
 
 .aboutPage {
@@ -1011,7 +1219,7 @@ body.lightTheme .header {
     0 auto;
 
   padding:
-    35px 30px 60px;
+    15px 30px 60px;
 
   min-height:
     calc(100vh - 70px);
@@ -1024,7 +1232,7 @@ body.lightTheme .header {
 
 .backButton {
   margin-bottom:
-    20px;
+    10px;
 
   padding:
     9px 17px;
@@ -1079,18 +1287,57 @@ body.lightTheme .header {
   padding:
     40px;
 
-  background-color:
-    var(--color-surface);
-
   border:
-    1px solid
-    var(--color-border);
+    2px solid
+    transparent;
+
+  background:
+    linear-gradient(
+      var(--color-surface),
+      var(--color-surface)
+    )
+    padding-box,
+
+    conic-gradient(
+      from var(--search-angle),
+
+      transparent 0deg,
+
+      var(--color-primary) 70deg,
+
+      var(--color-primary-light) 110deg,
+
+      transparent 160deg,
+
+      transparent 360deg
+    )
+    border-box;
+
+  animation:
+    searchBorderSpin
+    5s
+    linear
+    infinite;
 
   border-radius:
     var(--radius-xl);
 
   box-shadow:
     var(--shadow-lg);
+}
+
+
+/* ==================================================
+   PRODUCT DETAILS DARK SHADOW
+   ================================================== */
+
+body:not(.lightTheme) .productDetails {
+  box-shadow:
+    0 0 14px
+    rgba(255, 255, 255, 0.08),
+
+    0 8px 28px
+    rgba(255, 255, 255, 0.10);
 }
 
 
@@ -1150,10 +1397,6 @@ body.lightTheme .header {
 }
 
 
-/* ==================================================
-   DETAILS CATEGORY
-   ================================================== */
-
 .detailsCategory {
   width:
     fit-content;
@@ -1185,10 +1428,6 @@ body.lightTheme .header {
 }
 
 
-/* ==================================================
-   DETAILS TITLE
-   ================================================== */
-
 .detailsInfo h1 {
   margin:
     0 0 10px;
@@ -1204,10 +1443,6 @@ body.lightTheme .header {
 }
 
 
-/* ==================================================
-   DETAILS BRAND
-   ================================================== */
-
 .detailsBrand {
   margin:
     0 0 20px;
@@ -1216,10 +1451,6 @@ body.lightTheme .header {
     var(--color-text-secondary);
 }
 
-
-/* ==================================================
-   DETAILS RATING
-   ================================================== */
 
 .detailsRating {
   margin:
@@ -1232,10 +1463,6 @@ body.lightTheme .header {
     17px;
 }
 
-
-/* ==================================================
-   DETAILS PRICE
-   ================================================== */
 
 .detailsPrice {
   margin:
@@ -1252,10 +1479,6 @@ body.lightTheme .header {
 }
 
 
-/* ==================================================
-   DETAILS DESCRIPTION
-   ================================================== */
-
 .detailsDescription {
   margin-bottom:
     22px;
@@ -1270,10 +1493,6 @@ body.lightTheme .header {
     1.7;
 }
 
-
-/* ==================================================
-   DETAILS STOCK
-   ================================================== */
 
 .detailsStock {
   width:
@@ -1299,10 +1518,6 @@ body.lightTheme .header {
 }
 
 
-/* ==================================================
-   DETAILS SHIPPING
-   ================================================== */
-
 .detailsShipping {
   margin:
     0 0 25px;
@@ -1314,10 +1529,6 @@ body.lightTheme .header {
     var(--font-sm);
 }
 
-
-/* ==================================================
-   ADD TO CART BUTTON
-   ================================================== */
 
 .addCartButton {
   width:
@@ -1360,9 +1571,44 @@ body.lightTheme .header {
     translateY(-2px);
 }
 
+/* ==================================================
+   REMOVE FROM CART BUTTON
+   ================================================== */
+
+/*
+  When the product is already
+  inside the cart, the same button
+  becomes a Remove button.
+*/
+
+.removeFromCartButton {
+  background-color:
+    transparent;
+
+  color:
+    var(--color-danger);
+
+  border:
+    1px solid
+    var(--color-danger);
+}
+
 
 /* ==================================================
-   CART / FAVORITES PAGE
+   REMOVE FROM CART HOVER
+   ================================================== */
+
+.removeFromCartButton:hover {
+  background-color:
+    var(--color-danger);
+
+  color:
+    #ffffff;
+}
+
+
+/* ==================================================
+   CART / FAVORITES
    ================================================== */
 
 .cartPage {
@@ -1395,10 +1641,6 @@ body.lightTheme .header {
 }
 
 
-/* ==================================================
-   EMPTY CART / FAVORITES
-   ================================================== */
-
 .emptyCart {
   padding:
     35px;
@@ -1421,10 +1663,6 @@ body.lightTheme .header {
 }
 
 
-/* ==================================================
-   CART ITEMS
-   ================================================== */
-
 .cartItems {
   display:
     flex;
@@ -1436,10 +1674,6 @@ body.lightTheme .header {
     14px;
 }
 
-
-/* ==================================================
-   CART ITEM
-   ================================================== */
 
 .cartItem {
   width:
@@ -1481,10 +1715,6 @@ body.lightTheme .header {
 }
 
 
-/* ==================================================
-   CART IMAGE
-   ================================================== */
-
 .cartItem img {
   width:
     90px;
@@ -1508,10 +1738,6 @@ body.lightTheme .header {
     var(--radius-md);
 }
 
-
-/* ==================================================
-   CART ITEM INFO
-   ================================================== */
 
 .cartItemInfo {
   flex:
@@ -1546,10 +1772,6 @@ body.lightTheme .header {
 }
 
 
-/* ==================================================
-   REMOVE BUTTON
-   ================================================== */
-
 .removeCartButton {
   padding:
     8px 13px;
@@ -1583,10 +1805,6 @@ body.lightTheme .header {
     #ffffff;
 }
 
-
-/* ==================================================
-   CART SUMMARY
-   ================================================== */
 
 .cartSummary {
   display:
@@ -1624,10 +1842,6 @@ body.lightTheme .header {
     var(--font-lg);
 }
 
-
-/* ==================================================
-   CLEAR CART BUTTON
-   ================================================== */
 
 .clearCartButton {
   padding:
@@ -1771,7 +1985,6 @@ body.lightTheme .header {
 
 @media (max-width: 800px) {
 
-
   /* HEADER */
 
   .header {
@@ -1841,7 +2054,7 @@ body.lightTheme .header {
   }
 
 
-  /* SHOP LAYOUT */
+  /* SHOP */
 
   .shopLayout {
     grid-template-columns:
@@ -1933,7 +2146,7 @@ body.lightTheme .header {
   }
 
 
-  /* CART / FAVORITES */
+  /* CART */
 
   .cartPage {
     padding:
@@ -1985,11 +2198,136 @@ body.lightTheme .header {
 
 
 /* ==================================================
+   COLLAPSIBLE CATEGORIES
+   350px - 798px
+   ================================================== */
+
+@media (
+  min-width: 350px
+) and (
+  max-width: 798px
+) {
+
+  /* ------------------------------------------
+     HIDE DESKTOP TITLE
+     ------------------------------------------ */
+
+  .categoryTitle {
+    display:
+      none;
+  }
+
+
+  /* ------------------------------------------
+     SHOW CATEGORY TOGGLE
+     ------------------------------------------ */
+
+  .categoryToggle {
+    width:
+      100%;
+
+    display:
+      flex;
+
+    justify-content:
+      space-between;
+
+    align-items:
+      center;
+
+    padding:
+      10px 12px;
+
+    margin:
+      0;
+
+    background-color:
+      transparent;
+
+    color:
+      var(--color-text);
+
+    border:
+      none;
+
+    border-radius:
+      var(--radius-sm);
+
+    font-size:
+      17px;
+
+    font-weight:
+      700;
+
+    text-align:
+      left;
+
+    cursor:
+      pointer;
+
+    transition:
+      var(--transition-fast);
+  }
+
+
+  .categoryToggle:hover {
+    background-color:
+      var(--color-surface-hover);
+
+    color:
+      var(--color-primary);
+  }
+
+
+  /* ------------------------------------------
+     ARROW
+     ------------------------------------------ */
+
+  .categoryArrow {
+    color:
+      var(--color-primary);
+
+    font-size:
+      12px;
+
+    transition:
+      var(--transition-fast);
+  }
+
+
+  /* ------------------------------------------
+     OPTIONS CLOSED BY DEFAULT
+     ------------------------------------------ */
+
+  .categoryOptions {
+    display:
+      none;
+
+    padding-top:
+      10px;
+  }
+
+
+  /* ------------------------------------------
+     OPTIONS OPEN
+     ------------------------------------------ */
+
+  .categoryOptions.open {
+    display:
+      flex;
+
+    flex-direction:
+      column;
+  }
+
+}
+
+
+/* ==================================================
    SMALL MOBILE
    ================================================== */
 
 @media (max-width: 500px) {
-
 
   .headerButtons {
     width:
@@ -2025,6 +2363,55 @@ body.lightTheme .header {
   .removeCartButton {
     width:
       100%;
+  }
+
+}
+
+
+/* ==================================================
+   LAPTOP CONTENT SCALE
+   ================================================== */
+
+@media (
+  min-width: 1200px
+) and (
+  max-width: 1700px
+) {
+
+  .pageContent {
+    zoom:
+      0.88;
+  }
+
+}
+
+
+/* ==================================================
+   PRODUCT DETAILS SCALE
+   ================================================== */
+
+@media (min-width: 1024px) {
+
+  .detailsPage {
+    zoom:
+      0.90;
+  }
+
+}
+
+
+/* ==================================================
+   REDUCED MOTION
+   ================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .searchBox,
+  .productDetails,
+  .logo,
+  .title {
+    animation:
+      none;
   }
 
 }

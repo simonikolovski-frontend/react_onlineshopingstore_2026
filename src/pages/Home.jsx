@@ -4,6 +4,7 @@
 
 import {
   useEffect,
+  useMemo,
   useState
 } from 'react';
 
@@ -54,13 +55,6 @@ import {
 
 
 // ==================================================
-// APP STYLES
-// ==================================================
-
-import '../App.css';
-
-
-// ==================================================
 // HOME PAGE
 // ==================================================
 
@@ -108,7 +102,7 @@ function Home() {
 
 
   // ==================================================
-  // RESET FROM LOGO
+  // RESET FROM HOME / LOGO
   // ==================================================
 
   /*
@@ -116,7 +110,8 @@ function Home() {
 
     /?reset=1
 
-    when we click the Ecommerce logo.
+    when Home or Ecommerce
+    logo is clicked.
   */
 
   const resetFromLogo =
@@ -161,6 +156,23 @@ function Home() {
 
 
   // ==================================================
+  // MOBILE CATEGORY MENU
+  // ==================================================
+
+  /*
+    Used only on smaller screens.
+
+    false = closed
+    true  = open
+  */
+
+  const [
+    categoryOpen,
+    setCategoryOpen
+  ] = useState(false);
+
+
+  // ==================================================
   // PRODUCTS PER PAGE
   // ==================================================
 
@@ -169,16 +181,19 @@ function Home() {
 
 
   // ==================================================
-  // RESET FILTERS FROM LOGO
+  // RESET HOME PAGE
   // ==================================================
 
   /*
-    When Ecommerce logo is clicked:
+    When Home or Ecommerce logo
+    is clicked:
 
     1. clear search
     2. category becomes All
     3. page becomes 1
-    4. remove ?reset=1
+    4. close mobile Categories
+    5. scroll to top
+    6. remove ?reset=1
   */
 
   useEffect(() => {
@@ -205,7 +220,21 @@ function Home() {
     setPage(1);
 
 
-    // Remove ?reset=1 from URL.
+    // Close mobile category menu.
+
+    setCategoryOpen(false);
+
+
+    // Scroll to top.
+
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'smooth'
+    });
+
+
+    // Return to clean Home URL.
 
     navigate(
       '/',
@@ -229,7 +258,7 @@ function Home() {
 
     /search?q=laptop
 
-    search input becomes:
+    input becomes:
 
     laptop
   */
@@ -248,17 +277,16 @@ function Home() {
   // ==================================================
 
   /*
-    We wait 500ms after typing.
+    Wait 500ms after typing.
 
     This prevents searching
-    after every single key press.
+    after every key press.
   */
 
   useEffect(() => {
 
     const timeout =
       setTimeout(() => {
-
 
         const cleanSearch =
           searchInput.trim();
@@ -288,9 +316,6 @@ function Home() {
           /*
             Do not navigate while
             reset=1 is being handled.
-
-            The reset effect above
-            will navigate to "/".
           */
 
           if (
@@ -312,8 +337,8 @@ function Home() {
       }, 500);
 
 
-    // Cancel old timer
-    // if user types again.
+    // Cancel previous timer
+    // when user types again.
 
     return () =>
       clearTimeout(timeout);
@@ -328,11 +353,6 @@ function Home() {
   // ==================================================
   // ALL PRODUCTS QUERY
   // ==================================================
-
-  /*
-    Load all products
-    when there is no search.
-  */
 
   const {
     data: allProductsData,
@@ -364,11 +384,6 @@ function Home() {
   // ==================================================
   // SEARCH PRODUCTS QUERY
   // ==================================================
-
-  /*
-    This query runs only
-    when search has text.
-  */
 
   const {
     data: searchData,
@@ -432,11 +447,11 @@ function Home() {
   // ==================================================
 
   /*
-    If user searches:
-    use search results.
+    Search exists
+    → search results.
 
-    Otherwise:
-    use all products.
+    No search
+    → all products.
   */
 
   const productData =
@@ -481,24 +496,42 @@ function Home() {
 
   // ==================================================
   // CATEGORY FILTER
+  // useMemo
   // ==================================================
 
   /*
-    category === ''
+    React remembers the result.
 
-    means:
+    It filters again only when:
 
-    show ALL products.
+    1. productList changes
+    2. category changes
   */
 
   const filteredProducts =
-    category
-      ? productList.filter(
-          product =>
-            product.category ===
-            category
-        )
-      : productList;
+    useMemo(() => {
+
+      // No selected category
+      // means show everything.
+
+      if (!category) {
+        return productList;
+      }
+
+
+      // Show products only
+      // from selected category.
+
+      return productList.filter(
+        product =>
+          product.category ===
+          category
+      );
+
+    }, [
+      productList,
+      category
+    ]);
 
 
   // ==================================================
@@ -547,10 +580,34 @@ function Home() {
     );
 
 
-    // New category starts
-    // from page 1.
+    // Return pagination to page 1.
 
     setPage(1);
+
+
+    /*
+      Close the Categories menu.
+
+      On desktop this does not matter,
+      because CSS always shows
+      the category options.
+    */
+
+    setCategoryOpen(false);
+
+  }
+
+
+  // ==================================================
+  // CATEGORY MENU TOGGLE
+  // ==================================================
+
+  function handleCategoryToggle() {
+
+    setCategoryOpen(
+      previousOpen =>
+        !previousOpen
+    );
 
   }
 
@@ -561,23 +618,27 @@ function Home() {
 
   function handleClearFilters() {
 
-
     // Clear search.
 
     setSearchInput('');
 
 
-    // Return to All categories.
+    // Return category to All.
 
     setCategory('');
 
 
-    // Return to first page.
+    // Return to page 1.
 
     setPage(1);
 
 
-    // Return to clean Home URL.
+    // Close category menu.
+
+    setCategoryOpen(false);
+
+
+    // Return to Home.
 
     navigate('/');
 
@@ -654,12 +715,28 @@ function Home() {
       <div className="searchArea">
 
 
-        {/* SEARCH */}
+        {/* ==========================================
+            SEARCH
+            ========================================== */}
 
         <div className="searchBox">
 
+
+          {/* Screen reader label */}
+
+          <label
+            htmlFor="product-search"
+            className="sr-only"
+          >
+
+            {t('searchProducts')}
+
+          </label>
+
+
           <input
-            type="text"
+            id="product-search"
+            type="search"
             value={searchInput}
             onChange={event =>
               setSearchInput(
@@ -674,9 +751,12 @@ function Home() {
         </div>
 
 
-        {/* CLEAR FILTERS */}
+        {/* ==========================================
+            CLEAR FILTERS
+            ========================================== */}
 
         <button
+          type="button"
           className="clearFiltersButton"
           onClick={handleClearFilters}
         >
@@ -703,96 +783,152 @@ function Home() {
         <aside className="sidebar">
 
 
-          {/* CATEGORY TITLE */}
+          {/* ========================================
+              DESKTOP CATEGORY TITLE
+              ======================================== */}
 
-          <h3>
+          <h2 className="categoryTitle">
 
             {t('categories')}
 
-          </h3>
+          </h2>
 
 
           {/* ========================================
-              ALL
+              MOBILE / TABLET CATEGORY TOGGLE
               ======================================== */}
 
           <button
-            className={
-              category === ''
-                ? 'active'
-                : ''
+            type="button"
+            className="categoryToggle"
+            onClick={
+              handleCategoryToggle
             }
-            onClick={() =>
-              handleCategoryChange('')
+            aria-expanded={
+              categoryOpen
             }
+            aria-controls="category-options"
           >
 
-            {t('all')}
+            <span>
+              {t('categories')}
+            </span>
+
+
+            <span
+              className="categoryArrow"
+              aria-hidden="true"
+            >
+
+              {categoryOpen
+                ? '▲'
+                : '▼'}
+
+            </span>
 
           </button>
 
 
           {/* ========================================
-              CATEGORIES FROM API
+              CATEGORY OPTIONS
               ======================================== */}
 
-          {categories.map(
-            categoryItem => {
-
-
-              /*
-                DummyJSON can return:
-
-                "beauty"
-
-                OR
-
-                {
-                  slug: "beauty",
-                  name: "Beauty"
-                }
-              */
-
-
-              const categoryValue =
-                typeof categoryItem ===
-                'string'
-                  ? categoryItem
-                  : categoryItem.slug;
-
-
-              const categoryName =
-                typeof categoryItem ===
-                'string'
-                  ? categoryItem
-                  : categoryItem.name;
-
-
-              return (
-
-                <button
-                  key={categoryValue}
-                  className={
-                    category ===
-                    categoryValue
-                      ? 'active'
-                      : ''
-                  }
-                  onClick={() =>
-                    handleCategoryChange(
-                      categoryValue
-                    )
-                  }
-                >
-
-                  {categoryName}
-
-                </button>
-
-              );
-
+          <div
+            id="category-options"
+            className={
+              categoryOpen
+                ? 'categoryOptions open'
+                : 'categoryOptions'
             }
-          )}
+          >
+
+
+            {/* ======================================
+                ALL
+                ====================================== */}
+
+            <button
+              type="button"
+              className={
+                category === ''
+                  ? 'active'
+                  : ''
+              }
+              onClick={() =>
+                handleCategoryChange('')
+              }
+            >
+
+              {t('all')}
+
+            </button>
+
+
+            {/* ======================================
+                CATEGORIES FROM API
+                ====================================== */}
+
+            {categories.map(
+              categoryItem => {
+
+
+                /*
+                  DummyJSON can return:
+
+                  "beauty"
+
+                  OR
+
+                  {
+                    slug: "beauty",
+                    name: "Beauty"
+                  }
+                */
+
+
+                const categoryValue =
+                  typeof categoryItem ===
+                  'string'
+                    ? categoryItem
+                    : categoryItem.slug;
+
+
+                const categoryName =
+                  typeof categoryItem ===
+                  'string'
+                    ? categoryItem
+                    : categoryItem.name;
+
+
+                return (
+
+                  <button
+                    type="button"
+                    key={categoryValue}
+                    className={
+                      category ===
+                      categoryValue
+                        ? 'active'
+                        : ''
+                    }
+                    onClick={() =>
+                      handleCategoryChange(
+                        categoryValue
+                      )
+                    }
+                  >
+
+                    {categoryName}
+
+                  </button>
+
+                );
+
+              }
+            )}
+
+
+          </div>
 
 
         </aside>
@@ -864,6 +1000,7 @@ function Home() {
                 {/* PREVIOUS */}
 
                 <button
+                  type="button"
                   disabled={
                     page === 1
                   }
@@ -898,6 +1035,7 @@ function Home() {
                 {/* NEXT */}
 
                 <button
+                  type="button"
                   disabled={
                     page ===
                     totalPages

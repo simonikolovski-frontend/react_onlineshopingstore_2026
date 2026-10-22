@@ -1,4 +1,12 @@
 // ==================================================
+// REACT
+// ==================================================
+
+import {
+  useCallback
+} from 'react';
+
+// ==================================================
 // CART CONTEXT
 // ==================================================
 
@@ -40,6 +48,32 @@ function Cart() {
     removeItem,
     clearCart
   } = useCart();
+
+
+// ==================================================
+// REMOVE PRODUCT CALLBACK
+// ==================================================
+
+/*
+  useCallback keeps the same
+  function reference between renders.
+
+  A new function is created only
+  when removeItem changes.
+*/
+
+const handleRemove =
+  useCallback(
+    product => {
+
+      removeItem(product);
+
+    },
+    [
+      removeItem
+    ]
+  );
+
 
 
   // ==================================================
@@ -119,7 +153,7 @@ function Cart() {
 
               product={item}
 
-              onRemove={removeItem}
+              onRemove={handleRemove}
 
               removeText={
                 t('remove')
