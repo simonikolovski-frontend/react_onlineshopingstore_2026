@@ -187,7 +187,9 @@ createRoot(
                     REACT ROUTER
                     ================================ */}
 
-                <BrowserRouter>
+                <BrowserRouter
+  basename={import.meta.env.BASE_URL}
+>
 
 
                   {/* ==============================

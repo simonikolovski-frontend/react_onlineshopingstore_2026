@@ -1,0 +1,192 @@
+# ==================================================
+# GITHUB PAGES DEPLOY
+# ==================================================
+
+name: Deploy to GitHub Pages
+
+
+# ==================================================
+# WHEN SHOULD THIS WORKFLOW RUN?
+# ==================================================
+
+on:
+
+  # Run automatically every time
+  # we push to the main branch.
+
+  push:
+    branches:
+      - main
+
+
+  # Also allow us to start the
+  # deployment manually from GitHub.
+
+  workflow_dispatch:
+
+
+# ==================================================
+# PERMISSIONS
+# ==================================================
+
+permissions:
+
+  # GitHub Actions can read our code.
+
+  contents: read
+
+
+  # Allow deployment to GitHub Pages.
+
+  pages: write
+
+
+  # Required for GitHub Pages deployment.
+
+  id-token: write
+
+
+# ==================================================
+# CONCURRENCY
+# ==================================================
+
+concurrency:
+
+  # Only one Pages deployment
+  # should run at a time.
+
+  group: pages
+
+  cancel-in-progress: true
+
+
+# ==================================================
+# JOBS
+# ==================================================
+
+jobs:
+
+
+  # ==================================================
+  # DEPLOY JOB
+  # ==================================================
+
+  deploy:
+
+
+    # GitHub Pages environment.
+
+    environment:
+
+      name:
+        github-pages
+
+      url:
+        ${{ steps.deployment.outputs.page_url }}
+
+
+    # Use a Linux computer
+    # provided by GitHub.
+
+    runs-on:
+      ubuntu-latest
+
+
+    # ==================================================
+    # STEPS
+    # ==================================================
+
+    steps:
+
+
+      # ----------------------------------------------
+      # STEP 1
+      # GET OUR PROJECT FROM GITHUB
+      # ----------------------------------------------
+
+      - name: Checkout
+
+        uses:
+          actions/checkout@v7
+
+
+      # ----------------------------------------------
+      # STEP 2
+      # INSTALL NODE
+      # ----------------------------------------------
+
+      - name: Setup Node
+
+        uses:
+          actions/setup-node@v7
+
+        with:
+
+          node-version:
+            lts/*
+
+          cache:
+            npm
+
+
+      # ----------------------------------------------
+      # STEP 3
+      # INSTALL PROJECT DEPENDENCIES
+      # ----------------------------------------------
+
+      - name: Install dependencies
+
+        run:
+          npm ci
+
+
+      # ----------------------------------------------
+      # STEP 4
+      # BUILD THE VITE PROJECT
+      # ----------------------------------------------
+
+      - name: Build
+
+        run:
+          npm run build
+
+
+      # ----------------------------------------------
+      # STEP 5
+      # CONFIGURE GITHUB PAGES
+      # ----------------------------------------------
+
+      - name: Setup Pages
+
+        uses:
+          actions/configure-pages@v6
+
+
+      # ----------------------------------------------
+      # STEP 6
+      # UPLOAD THE DIST FOLDER
+      # ----------------------------------------------
+
+      - name: Upload artifact
+
+        uses:
+          actions/upload-pages-artifact@v5
+
+        with:
+
+          path:
+            ./dist
+
+
+      # ----------------------------------------------
+      # STEP 7
+      # DEPLOY TO GITHUB PAGES
+      # ----------------------------------------------
+
+      - name: Deploy to GitHub Pages
+
+        id:
+          deployment
+
+        uses:
+          actions/deploy-pages@v5

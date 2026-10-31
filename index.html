@@ -4,16 +4,8 @@
 
 <head>
 
-  <!-- ==================================================
-       BASIC SETTINGS
-       ================================================== -->
-
   <meta charset="UTF-8" />
 
-
-  <!-- ==================================================
-       RESPONSIVE DESIGN
-       ================================================== -->
 
   <meta
     name="viewport"
@@ -21,43 +13,87 @@
   />
 
 
-  <!-- ==================================================
-       SEO DESCRIPTION
-       ================================================== -->
-
   <meta
     name="description"
     content="Ecommerce React application for browsing products, searching, filtering, favorites and shopping cart."
   />
 
 
+  <title>
+    Ecommerce
+  </title>
+
+
   <!-- ==================================================
-       PAGE TITLE
+       GITHUB PAGES SPA ROUTING
        ================================================== -->
 
-  <title>Ecommerce</title>
+  <script>
+
+    /*
+      If 404.html redirected us here
+      with a route stored after ?/,
+      restore the original React URL
+      before React starts.
+    */
+
+    (function () {
+
+      var locationObject =
+        window.location;
+
+
+      if (
+        locationObject.search[1] === '/'
+      ) {
+
+        var decoded =
+          locationObject.search
+            .slice(1)
+            .split('&')
+            .map(function (part) {
+
+              return part.replace(
+                /~and~/g,
+                '&'
+              );
+
+            })
+            .join('?');
+
+
+        window.history.replaceState(
+          null,
+          '',
+          locationObject.pathname
+            .slice(
+              0,
+              -1
+            ) +
+          decoded +
+          locationObject.hash
+        );
+
+      }
+
+    })();
+
+  </script>
 
 </head>
 
 
 <body>
 
-  <!-- ==================================================
-       REACT APP
-       React will render the whole application here.
-       ================================================== -->
 
   <div id="root"></div>
 
-
-  <!-- ==================================================
-       MAIN REACT JAVASCRIPT FILE
-       ================================================== -->
 
   <script
     type="module"
     src="/src/main.jsx"
   ></script>
+
 
 </body>
 

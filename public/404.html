@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <title>Redirecting...</title>
+
+  <script>
+
+    // ==================================================
+    // GITHUB PAGES SPA REDIRECT
+    // ==================================================
+
+    /*
+      GitHub Pages does not understand
+      React routes like:
+
+      /cart
+      /favorites
+      /products/5
+
+      So when a user refreshes one of
+      those pages, GitHub opens this
+      404.html file.
+
+      This script remembers the route
+      and sends the user back to index.html.
+    */
+
+
+    var pathSegmentsToKeep = 1;
+
+
+    var locationObject =
+      window.location;
+
+
+    locationObject.replace(
+
+      locationObject.protocol +
+      '//' +
+
+      locationObject.hostname +
+
+      (
+        locationObject.port
+          ? ':' + locationObject.port
+          : ''
+      ) +
+
+      locationObject.pathname
+        .split('/')
+        .slice(
+          0,
+          1 + pathSegmentsToKeep
+        )
+        .join('/') +
+
+      '/?/' +
+
+      locationObject.pathname
+        .slice(1)
+        .split('/')
+        .slice(pathSegmentsToKeep)
+        .join('/')
+        .replace(
+          /&/g,
+          '~and~'
+        ) +
+
+      (
+        locationObject.search
+          ? '&' +
+            locationObject.search
+              .slice(1)
+              .replace(
+                /&/g,
+                '~and~'
+              )
+          : ''
+      ) +
+
+      locationObject.hash
+
+    );
+
+  </script>
+
+</head>
+
+
+<body>
+
+</body>
+
+</html>
