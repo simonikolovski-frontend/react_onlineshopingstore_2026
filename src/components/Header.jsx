@@ -63,9 +63,9 @@ function Header() {
   // FAVORITES
   // ==================================================
 
-  const {
-    favorites
-  } = useFavorites();
+const {
+  favorites,
+} = useFavorites();
 
 
   // ==================================================
@@ -119,23 +119,23 @@ function Header() {
 
 
   // ==================================================
-  // LOGOUT
-  // ==================================================
+// LOGOUT
+// ==================================================
 
-  function handleLogout() {
+function handleLogout() {
 
-    // Empty cart.
-    clearCart();
-
-
-    // Logout user.
-    logout();
+  // Empty cart.
+  clearCart();
 
 
-    // Go to Home.
-    navigate('/');
+  // Logout user.
+  logout();
 
-  }
+
+  // Go to Home.
+  navigate('/');
+
+}
 
 
   // ==================================================

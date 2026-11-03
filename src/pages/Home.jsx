@@ -55,6 +55,19 @@ import {
 
 
 // ==================================================
+// EMPTY PRODUCTS
+// ==================================================
+
+/*
+  Овој празен array се креира само еднаш.
+
+  Така React не добива нов []
+  при секој render.
+*/
+
+const EMPTY_PRODUCTS = [];
+
+// ==================================================
 // HOME PAGE
 // ==================================================
 
@@ -271,83 +284,140 @@ function Home() {
     search
   ]);
 
+// ==================================================
+// SEARCH DEBOUNCE
+// ==================================================
 
-  // ==================================================
-  // SEARCH DEBOUNCE
-  // ==================================================
+/*
+  Чекаме 500ms откако корисникот
+  ќе престане да пишува.
 
-  /*
-    Wait 500ms after typing.
+  Example:
 
-    This prevents searching
-    after every key press.
-  */
+  p
+  ph
+  pho
+  phone
 
-  useEffect(() => {
+  Потоа URL станува:
 
-    const timeout =
-      setTimeout(() => {
+  /search?q=phone
 
-        const cleanSearch =
-          searchInput.trim();
+  replace: true значи дека
+  не создаваме нов browser history
+  entry за секое пребарување.
+*/
 
+useEffect(() => {
 
-        // ==========================================
-        // SEARCH HAS TEXT
-        // ==========================================
-
-        if (cleanSearch) {
-
-          navigate(
-            `/search?q=${encodeURIComponent(
-              cleanSearch
-            )}`
-          );
-
-        }
+  const timeout =
+    setTimeout(() => {
 
 
-        // ==========================================
-        // SEARCH IS EMPTY
-        // ==========================================
+      // ==================================================
+      // CLEAN SEARCH TEXT
+      // ==================================================
 
-        else {
+      const cleanSearch =
+        searchInput.trim();
 
-          /*
-            Do not navigate while
-            reset=1 is being handled.
-          */
 
-          if (
-            resetFromLogo !== '1'
-          ) {
+      // ==================================================
+      // SEARCH HAS TEXT
+      // ==================================================
 
-            navigate('/');
+      /*
+        Ако има текст:
 
+        phone
+
+        и URL моментално НЕ е:
+
+        ?q=phone
+
+        тогаш го менуваме URL.
+      */
+
+      if (
+        cleanSearch &&
+        cleanSearch !== search
+      ) {
+
+        navigate(
+          `/search?q=${encodeURIComponent(
+            cleanSearch
+          )}`,
+          {
+            replace: true
           }
+        );
 
-        }
 
-
-        // New search starts
-        // from page 1.
+        // New search starts from page 1.
 
         setPage(1);
 
-      }, 500);
+
+        return;
+      }
 
 
-    // Cancel previous timer
-    // when user types again.
+      // ==================================================
+      // SEARCH WAS CLEARED
+      // ==================================================
 
-    return () =>
-      clearTimeout(timeout);
+      /*
+        Ако input е празен,
+        но URL имал search:
 
-  }, [
-    searchInput,
-    navigate,
-    resetFromLogo
-  ]);
+        /search?q=phone
+
+        тогаш се враќаме на Home.
+
+        resetFromLogo проверката спречува
+        конфликт со logo reset.
+      */
+
+      if (
+        !cleanSearch &&
+        search &&
+        resetFromLogo !== '1'
+      ) {
+
+        navigate(
+          '/',
+          {
+            replace: true
+          }
+        );
+
+
+        setPage(1);
+      }
+
+    }, 500);
+
+
+  // ==================================================
+  // CLEANUP
+  // ==================================================
+
+  /*
+    Ако корисникот напише нова буква
+    пред да поминат 500ms,
+    го бришеме стариот timer.
+  */
+
+  return () =>
+    clearTimeout(timeout);
+
+
+}, [
+  searchInput,
+  search,
+  navigate,
+  resetFromLogo
+]);
 
 
   // ==================================================
@@ -486,12 +556,13 @@ function Home() {
       : allProductsErrorData;
 
 
-  // ==================================================
-  // PRODUCTS ARRAY
-  // ==================================================
+// ==================================================
+// PRODUCTS ARRAY
+// ==================================================
 
-  const productList =
-    productData?.products || [];
+const productList =
+  productData?.products
+  ?? EMPTY_PRODUCTS;
 
 
   // ==================================================

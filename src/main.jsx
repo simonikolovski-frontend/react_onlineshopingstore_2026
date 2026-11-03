@@ -31,6 +31,22 @@ import {
 
 
 // ==================================================
+// APP
+// ==================================================
+
+import App
+  from './App.jsx';
+
+
+// ==================================================
+// ERROR BOUNDARY
+// ==================================================
+
+import ErrorBoundary
+  from './components/ErrorBoundary.jsx';
+
+
+// ==================================================
 // CONTEXT PROVIDERS
 // ==================================================
 
@@ -38,28 +54,25 @@ import {
   ThemeProvider
 } from './context/ThemeContext.jsx';
 
+
 import {
   AuthProvider
 } from './context/AuthContext.jsx';
+
 
 import {
   CartProvider
 } from './context/CartContext.jsx';
 
+
 import {
   FavoritesProvider
 } from './context/FavoritesContext.jsx';
 
+
 import {
   LanguageProvider
 } from './context/LanguageContext.jsx';
-
-
-// ==================================================
-// APP
-// ==================================================
-
-import App from './App.jsx';
 
 
 // ==================================================
@@ -70,66 +83,23 @@ import './index.css';
 
 
 // ==================================================
-// 1. CREATE QUERY CLIENT
+// REACT QUERY CLIENT
 // ==================================================
 
-// QueryClient controls how
-// TanStack Query behaves
-// in the whole application.
+/*
+  QueryClient ја контролира
+  TanStack Query cache логиката.
+
+  Нашите useQuery повици
+  го користат овој client.
+*/
 
 const queryClient =
-  new QueryClient({
-
-    defaultOptions: {
-
-      queries: {
-
-
-        // ------------------------------------------
-        // STALE TIME
-        // ------------------------------------------
-
-        // Data is considered fresh
-        // for 2 minutes.
-        //
-        // 2 minutes
-        // =
-        // 2 * 60 * 1000 milliseconds
-
-        staleTime:
-          2 * 60 * 1000,
-
-
-        // ------------------------------------------
-        // RETRY
-        // ------------------------------------------
-
-        // If an API request fails,
-        // TanStack Query tries again
-        // up to 2 times.
-
-        retry: 2,
-
-
-        // ------------------------------------------
-        // WINDOW FOCUS
-        // ------------------------------------------
-
-        // Do not automatically make
-        // another API request every time
-        // we return to the browser tab.
-
-        refetchOnWindowFocus: false
-
-      }
-
-    }
-
-  });
+  new QueryClient();
 
 
 // ==================================================
-// 2. RENDER APPLICATION
+// START REACT APPLICATION
 // ==================================================
 
 createRoot(
@@ -139,85 +109,109 @@ createRoot(
   <StrictMode>
 
 
-    {/* ============================================
-        TANSTACK QUERY
-        ============================================ */}
+    {/* ==============================================
+        ERROR BOUNDARY
+        ==============================================
 
-    <QueryClientProvider
-      client={queryClient}
-    >
+        Го ставаме високо во tree.
 
+        Ако нешто под него crash-не,
+        ќе се прикаже fallback page
+        наместо white screen.
+    */}
 
-      {/* ==========================================
-          THEME CONTEXT
-          ========================================== */}
-
-      <ThemeProvider>
+    <ErrorBoundary>
 
 
-        {/* ========================================
-            AUTH CONTEXT
-            ======================================== */}
+      {/* ============================================
+          TANSTACK QUERY
+          ============================================ */}
 
-        <AuthProvider>
-
-
-          {/* ======================================
-              CART CONTEXT
-              ====================================== */}
-
-          <CartProvider>
+      <QueryClientProvider
+        client={queryClient}
+      >
 
 
-            {/* ====================================
-                FAVORITES CONTEXT
-                ==================================== */}
+        {/* ==========================================
+            THEME
+            ========================================== */}
 
-            <FavoritesProvider>
-
-
-              {/* ==================================
-                  LANGUAGE CONTEXT
-                  ================================== */}
-
-              <LanguageProvider>
+        <ThemeProvider>
 
 
-                {/* ================================
-                    REACT ROUTER
-                    ================================ */}
+          {/* ========================================
+              AUTH
+              ======================================== */}
 
-                <BrowserRouter
-  basename={import.meta.env.BASE_URL}
->
+          <AuthProvider>
 
 
-                  {/* ==============================
-                      APPLICATION
-                      ============================== */}
+            {/* ======================================
+                CART
+                ====================================== */}
 
-                  <App />
-
-
-                </BrowserRouter>
+            <CartProvider>
 
 
-              </LanguageProvider>
+              {/* ====================================
+                  FAVORITES
+                  ==================================== */}
+
+              <FavoritesProvider>
 
 
-            </FavoritesProvider>
+                {/* ==================================
+                    LANGUAGE
+                    ================================== */}
+
+                <LanguageProvider>
 
 
-          </CartProvider>
+                  {/* ================================
+                      ROUTER
+                      ================================
+
+                      BASE_URL е потребен затоа што
+                      проектот е deploy-иран на
+                      GitHub Pages во repository path.
+                  */}
+
+                  <BrowserRouter
+                    basename={
+                      import.meta.env.BASE_URL
+                    }
+                  >
 
 
-        </AuthProvider>
+                    {/* ==============================
+                        APPLICATION
+                        ============================== */}
+
+                    <App />
 
 
-      </ThemeProvider>
+                  </BrowserRouter>
 
 
-    </QueryClientProvider>
+                </LanguageProvider>
+
+
+              </FavoritesProvider>
+
+
+            </CartProvider>
+
+
+          </AuthProvider>
+
+
+        </ThemeProvider>
+
+
+      </QueryClientProvider>
+
+
+    </ErrorBoundary>
 
 
   </StrictMode>

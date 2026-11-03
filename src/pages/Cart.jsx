@@ -145,11 +145,11 @@ const handleRemove =
 
 
         {items.map(
-          (item, index) => (
+          (item) => (
 
             <ProductListItem
 
-              key={`${item.id}-${index}`}
+              key={item.id}
 
               product={item}
 

@@ -4,31 +4,33 @@
 
 import {
   createContext,
-  useContext
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState
 } from 'react';
 
 
 // ==================================================
-// LOCAL STORAGE HOOK
+// AUTH
 // ==================================================
 
-import useLocalStorage
-  from '../hooks/useLocalStorage.jsx';
+import {
+  useAuth
+} from './AuthContext.jsx';
 
 
 // ==================================================
-// 1. CREATE FAVORITES CONTEXT
+// FAVORITES CONTEXT
 // ==================================================
-
-// Context creates a shared place
-// for our favorite products.
 
 const FavoritesContext =
   createContext(null);
 
 
 // ==================================================
-// 2. FAVORITES PROVIDER
+// FAVORITES PROVIDER
 // ==================================================
 
 export function FavoritesProvider({
@@ -37,137 +39,388 @@ export function FavoritesProvider({
 
 
   // ==================================================
-  // FAVORITES STATE
+  // CURRENT USER
   // ==================================================
 
-  // favorites starts as an empty array:
-  //
-  // []
-  //
-  // We use useLocalStorage so favorites
-  // stay saved after page refresh.
+  const {
+    user
+  } = useAuth();
+
+
+  // ==================================================
+  // FAVORITES STATE
+  // ==================================================
 
   const [
     favorites,
     setFavorites
-  ] = useLocalStorage(
-    'favorites',
-    []
-  );
+  ] = useState([]);
 
 
   // ==================================================
-  // 3. ADD FAVORITE
+  // LOAD FAVORITES FOR CURRENT USER
   // ==================================================
 
-  function addFavorite(product) {
+  /*
+    Секој user има свој localStorage key.
 
-    setFavorites(
-      previousFavorites => [
+    Example:
 
-        ...previousFavorites,
+    favorites:1
+    favorites:2
+    favorites:3
 
-        product
+    Значи favorites од еден user
+    не се мешаат со друг user.
+  */
 
-      ]
-    );
-
-  }
-
-
-  // ==================================================
-  // 4. REMOVE FAVORITE
-  // ==================================================
-
-  function removeFavorite(product) {
-
-    setFavorites(
-      previousFavorites =>
-        previousFavorites.filter(
-          favorite =>
-            favorite.id !== product.id
-        )
-    );
-
-  }
+  useEffect(() => {
 
 
-  // ==================================================
-  // 5. CHECK IF PRODUCT IS FAVORITE
-  // ==================================================
+    // Ако нема најавен user,
+    // нема favorites за прикажување.
 
-  function isFavorite(product) {
+    if (!user) {
 
-    return favorites.some(
-      favorite =>
-        favorite.id === product.id
-    );
-
-  }
-
-
-  // ==================================================
-  // 6. TOGGLE FAVORITE
-  // ==================================================
-
-  // toggle means:
-  //
-  // if product is NOT favorite
-  // → add it
-  //
-  // if product IS favorite
-  // → remove it
-
-  function toggleFavorite(product) {
-
-    if (isFavorite(product)) {
-
-      removeFavorite(product);
+      setFavorites([]);
 
       return;
-
     }
 
 
-    addFavorite(product);
+    // Create user-specific key.
 
-  }
+    const storageKey =
+      `favorites:${user.id}`;
+
+
+    try {
+
+      const savedFavorites =
+        localStorage.getItem(
+          storageKey
+        );
+
+
+      // Ако нема зачувани favorites.
+
+      if (!savedFavorites) {
+
+        setFavorites([]);
+
+        return;
+      }
+
+
+      const parsedFavorites =
+        JSON.parse(
+          savedFavorites
+        );
+
+
+      // Проверка дека е array.
+
+      if (
+        Array.isArray(
+          parsedFavorites
+        )
+      ) {
+
+        setFavorites(
+          parsedFavorites
+        );
+
+      } else {
+
+        setFavorites([]);
+
+      }
+
+    } catch {
+
+      setFavorites([]);
+
+    }
+
+  }, [
+    user
+  ]);
 
 
   // ==================================================
-  // 7. PROVIDE FAVORITES DATA
+  // UPDATE FAVORITES
   // ==================================================
 
-  return (
-    <FavoritesContext
-      value={{
+  /*
+    Оваа helper функција:
+
+    1. ја менува favorites листата
+    2. ја зачувува во localStorage
+
+    localStorage key зависи од user.id.
+  */
+
+  const updateFavorites =
+    useCallback(
+      updateFunction => {
+
+        if (!user) {
+          return;
+        }
+
+
+        setFavorites(
+          currentFavorites => {
+
+            const safeFavorites =
+              Array.isArray(
+                currentFavorites
+              )
+                ? currentFavorites
+                : [];
+
+
+            const updatedFavorites =
+              updateFunction(
+                safeFavorites
+              );
+
+
+            const storageKey =
+              `favorites:${user.id}`;
+
+
+            localStorage.setItem(
+              storageKey,
+              JSON.stringify(
+                updatedFavorites
+              )
+            );
+
+
+            return updatedFavorites;
+
+          }
+        );
+
+      },
+      [
+        user
+      ]
+    );
+
+
+  // ==================================================
+  // ADD FAVORITE
+  // ==================================================
+
+  const addFavorite =
+    useCallback(
+      product => {
+
+        updateFavorites(
+          currentFavorites => {
+
+            const alreadyExists =
+              currentFavorites.some(
+                item =>
+                  item.id === product.id
+              );
+
+
+            if (alreadyExists) {
+
+              return currentFavorites;
+
+            }
+
+
+            return [
+              ...currentFavorites,
+              product
+            ];
+
+          }
+        );
+
+      },
+      [
+        updateFavorites
+      ]
+    );
+
+
+  // ==================================================
+  // REMOVE FAVORITE
+  // ==================================================
+
+  const removeFavorite =
+    useCallback(
+      product => {
+
+        updateFavorites(
+          currentFavorites => {
+
+            return currentFavorites.filter(
+              item =>
+                item.id !== product.id
+            );
+
+          }
+        );
+
+      },
+      [
+        updateFavorites
+      ]
+    );
+
+
+  // ==================================================
+  // TOGGLE FAVORITE
+  // ==================================================
+
+  const toggleFavorite =
+    useCallback(
+      product => {
+
+        updateFavorites(
+          currentFavorites => {
+
+            const alreadyExists =
+              currentFavorites.some(
+                item =>
+                  item.id === product.id
+              );
+
+
+            // REMOVE FAVORITE
+
+            if (alreadyExists) {
+
+              return currentFavorites.filter(
+                item =>
+                  item.id !== product.id
+              );
+
+            }
+
+
+            // ADD FAVORITE
+
+            return [
+              ...currentFavorites,
+              product
+            ];
+
+          }
+        );
+
+      },
+      [
+        updateFavorites
+      ]
+    );
+
+
+  // ==================================================
+  // CHECK IF FAVORITE
+  // ==================================================
+
+  /*
+    Работи и со:
+
+    isFavorite(product)
+
+    и:
+
+    isFavorite(product.id)
+  */
+
+  const isFavorite =
+    useCallback(
+      productOrId => {
+
+        const productId =
+          typeof productOrId ===
+          'object'
+            ? productOrId?.id
+            : productOrId;
+
+
+        return favorites.some(
+          item =>
+            item.id === productId
+        );
+
+      },
+      [
+        favorites
+      ]
+    );
+
+
+  // ==================================================
+  // CONTEXT VALUE
+  // ==================================================
+
+  const contextValue =
+    useMemo(
+      () => ({
+
+        favorites,
+
+        addFavorite,
+
+        removeFavorite,
+
+        toggleFavorite,
+
+        isFavorite
+
+      }),
+      [
         favorites,
         addFavorite,
         removeFavorite,
         toggleFavorite,
         isFavorite
-      }}
+      ]
+    );
+
+
+  // ==================================================
+  // PROVIDER
+  // ==================================================
+
+  return (
+
+    <FavoritesContext
+      value={contextValue}
     >
 
       {children}
 
     </FavoritesContext>
+
   );
 
 }
 
 
 // ==================================================
-// 8. CUSTOM HOOK
+// USE FAVORITES
 // ==================================================
 
 export function useFavorites() {
 
   const context =
-    useContext(FavoritesContext);
+    useContext(
+      FavoritesContext
+    );
 
 
-  if (context === null) {
+  if (!context) {
 
     throw new Error(
       'useFavorites must be used inside FavoritesProvider'

@@ -264,7 +264,7 @@ export function LanguageProvider({
   function t(key) {
 
     return (
-      translations[language][key]
+      translations[language]?.[key]
       ?? key
     );
 
