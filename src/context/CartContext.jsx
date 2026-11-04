@@ -57,7 +57,7 @@ const initialState = {
   CLEAR_CART
 */
 
-function cartReducer(
+export function cartReducer(
   state,
   action
 ) {
