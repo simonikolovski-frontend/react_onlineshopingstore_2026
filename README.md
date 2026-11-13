@@ -1,16 +1,60 @@
-# React + Vite
+# React E-Commerce Store
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A responsive e-commerce portfolio application built with **React 19** and **Vite** as a final frontend development project.
 
-Currently, two official plugins are available:
+**[🌐 Live Demo](https://simonikolovski-frontend.github.io/react_onlineshopingstore_2026/)** · **[Source Code](https://github.com/simonikolovski-frontend/react_onlineshopingstore_2026)**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+- Browse products retrieved from the [DummyJSON API](https://dummyjson.com/).
+- Search products and filter by category.
+- Navigate through product listings with pagination.
+- View individual product details with client-side routing and lazy loading.
+- Add and remove products from a shopping cart.
+- Save favorites and revisit them later.
+- Persist cart and favorite data in browser local storage.
+- Responsive interface, with language and theme context.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+> **Portfolio demo:** Login is simulated locally; there is no real user authentication, checkout, payment processing, or backend order management.
 
-## Expanding the Oxlint configuration
+## Tech stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+- **Frontend:** React 19, JavaScript, HTML5, CSS3, Vite
+- **Routing:** React Router
+- **Data fetching / caching:** TanStack Query and Fetch API
+- **State:** React Context, hooks and useReducer
+- **Testing / tooling:** Vitest, Oxlint
+- **Hosting:** GitHub Pages with GitHub Actions
+
+## Run locally
+
+Requirements: Node.js and npm.
+
+```bash
+git clone https://github.com/simonikolovski-frontend/react_onlineshopingstore_2026.git
+cd react_onlineshopingstore_2026
+npm ci
+npm run dev
+```
+
+Open the local URL printed by Vite.
+
+## Useful commands
+
+```bash
+npm run dev       # Development server
+npm run build     # Production build
+npm run preview   # Preview production build
+npm run test      # Run tests
+npm run lint      # Run Oxlint
+```
+
+## Deployment
+
+The project is hosted on GitHub Pages under the repository path `/react_onlineshopingstore_2026/`. The Vite `base` option and React Router `basename` are configured for that path. A GitHub Actions workflow builds and deploys the `dist` directory.
+
+## Author
+
+**Simo Nikolovski** — Frontend Development Academy, Creative Hub (2025–2026).
+
+[GitHub Profile](https://github.com/simonikolovski-frontend)
