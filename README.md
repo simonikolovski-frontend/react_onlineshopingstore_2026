@@ -1,5 +1,7 @@
 # React E-Commerce Store
 
+![React](https://img.shields.io/badge/React-19-149ECA?logo=react&logoColor=white) ![JavaScript](https://img.shields.io/badge/JavaScript-ES6%2B-F7DF1E?logo=javascript&logoColor=black) ![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white) ![CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css&logoColor=white) ![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white) ![React Router](https://img.shields.io/badge/React_Router-CA4245?logo=reactrouter&logoColor=white) ![TanStack Query](https://img.shields.io/badge/TanStack_Query-FF4154?logo=reactquery&logoColor=white)
+
 A responsive e-commerce portfolio application built with **React 19** and **Vite** as a final frontend development project.
 
 **[🌐 Live Demo](https://simonikolovski-frontend.github.io/react_onlineshopingstore_2026/)** · **[Source Code](https://github.com/simonikolovski-frontend/react_onlineshopingstore_2026)**
